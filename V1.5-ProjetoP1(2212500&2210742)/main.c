@@ -354,8 +354,6 @@ void mostrarDadosMembros(tipoMembro vetorMembros[], int totMembros)
     }
 }
 
-/**/
-
 //!!!!!!!!!!!!         TESTES       !!!!!!!!!!!!!!!!
 
 tipoTeste lerDadosTeste(void)
