@@ -510,7 +510,7 @@ void listarConfinamento(tipoMembro vetorMembros[],int totMembros){
             }   
 
 }
-/* Funcoes para leitura de dados */
+/* Funcoes para leitura de dadosaa */
 
 void lerString(char vetor[80], int max){
     int tamanhoString;
