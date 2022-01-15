@@ -441,9 +441,6 @@ int contaTestesPCR(tipoTeste vetorTestes[],int totTestesAgendados, int totMembro
     return totPCR;
 }
 
-//Comentario do Duarte
-
-
 /*!!!!!!!!!!!!FUNCOES EM MANUTENCAO!!!!!!!!!!!!!!!!
 
 void mostrartestes(tipoTeste *testes.int quantidadeTestes){
@@ -467,37 +464,35 @@ void displayteste (tipoTeste*testes[]){
     printf("horaColheita",*testes[i].horaColheita);
 }
 
-*/
+///////////////////////////////////////////////
 
-/*void fEstatistica(tipoMembro vetorMembros[],int totMembros){
+
+void fEstatistica(tipoMembro vetorMembros[],int totMembros){
 
 int i,numEstudantes,numTecnicos,numDocentes;
 
 for(i=0;i<totMembros;i++){
 
-    if(vetorMembros[i].estadoMembro =='E'){                 // conta o numero de cada tipo de membro existente nas variaveis num numEstudantes,numTecnicos,numDocentes para depois dar printf
+        if(vetorMembros[i].estadoMembro =='E'){                 // conta o numero de cada tipo de membro existente nas variaveis num numEstudantes,numTecnicos,numDocentes para depois dar printf
 
-        numEstudantes++;
+            numEstudantes++;
+        }
+
+        if(vetorMembros[i].estadoMembro =='T'){
+
+            numTecnicos++;
+        }
+
+        if(vetorMembros[i].estadoMembro =='D'){
+
+            numDocentes++;
+        }
+
     }
-
-    if(vetorMembros[i].estadoMembro =='T'){
-
-        numTecnicos++;
-    }
-
-    if(vetorMembros[i].estadoMembro =='D'){
-
-        numDocentes++;
-    }
-
-
-
 }
 
-
-
-}
 */
+
 void listarConfinamento(tipoMembro vetorMembros[],int totMembros){
     int i, confinados;
 
@@ -536,6 +531,7 @@ void listarConfinamento(tipoMembro vetorMembros[],int totMembros){
             }   
 
 }
+
 
 /* Funcoes para leitura de dados */
 
