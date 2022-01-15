@@ -509,7 +509,6 @@ tipoData lerData(void){
 
     printf("\n Ano (%d a %d): ",2018,2030);
     data.ano = lerInteiro(2018,2030);
-
     printf("Mes (%d a %d): ",1,12);
     data.mes = lerInteiro(1,12);
 
