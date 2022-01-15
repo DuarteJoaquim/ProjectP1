@@ -102,11 +102,11 @@ int main()
         case 'M':
                 mostrarDadosMembros(vetorMembros, totMembros);
             break;
-        case 'A':
-                vetorTestes = agendarTeste(vetorTestes, vetorMembros, &totTestesAgendados, totMembros);
-            break;
         case 'L':
                 listarConfinamento(vetorMembros,totMembros);
+            break;
+        case 'A':
+                vetorTestes = agendarTeste(vetorTestes, vetorMembros, &totTestesAgendados, totMembros);
             break;
         /*case 'G':
            // gravaFicheiroBinario(vetorEstudantes, totEstudantes);
@@ -137,8 +137,8 @@ char menu (int totalM, int totTestesAg, int totTestesRea, int totalMemVac)
     printf("\n V - Atualizar Estado de Vacinacao");
     printf("\n C - Atualizar Estado de Confinamento");
     printf("\n M - Mostrar Dados Membros");
+    printf("\n L - Mostrar Dados Confinamentos");
     printf("\n A - Agendar Novo Teste");
-    printf("\n L - Mostrar Confinamentos");
     /*printf("\n G - Gravar dados em ficheiro");
     printf("\n L - Ler dados de ficheiro");*/
     printf("\n\n T - Terminar Programa");
