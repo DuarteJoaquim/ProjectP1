@@ -1,0 +1,19 @@
+# depslib dependency file v1.0
+1639967294 source:c:\users\duarte\desktop\uni\1ºano\p1\projeto\projeto1\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+
+1641767283 source:c:\users\duarte\desktop\uni\1ºano\1semestre\p1\projeto\projeto1\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+
+1641941011 source:c:\users\duarte\desktop\uni\1ºano\1semestre\p1\projeto\projetop1(2212500&2210742)\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+
