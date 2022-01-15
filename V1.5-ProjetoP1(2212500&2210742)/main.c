@@ -27,6 +27,8 @@ typedef struct
     char estadoMembro; //((E)studante, (D)ocente ou (T)�cnico)
     tipoData anoNascimento;
     int estadoConfinamento;//((0)n�o confinado,(1) quarentena ou (2)isolamento profil�tico)
+    int diasConfinamento;
+    tipoData dataConfinamento;
     int estadoVacinacao;// ((0)sem vacina,(1) dose1,(2) dose2 ou (3)dose3)
     tipoData ultimaVacina;
 
@@ -56,6 +58,8 @@ void mostrarDadosMembros(tipoMembro vetorMembros[], int totMembros);
 tipoTeste lerDadosTeste(void);
 tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[], int *totTestesAgendados, int totMembros);
 int contaTestesPCR(tipoTeste vetorTestes[],int totTestesAgendados, int totMembros, int dataDia, int dataMes, int dataAno);
+
+void listarConfinamento(tipoMembro vetorMembros[],int totMembros);
 
 void limpaBufferStdin(void);
 int lerInteiro(int min, int max);
@@ -101,6 +105,9 @@ int main()
         case 'A':
                 vetorTestes = agendarTeste(vetorTestes, vetorMembros, &totTestesAgendados, totMembros);
             break;
+        case 'L':
+                listarConfinamento(vetorMembros,totMembros);
+            break;
         /*case 'G':
            // gravaFicheiroBinario(vetorEstudantes, totEstudantes);
            // gravaFicheiroTexto(vetorEstudantes, totEstudantes);
@@ -131,6 +138,7 @@ char menu (int totalM, int totTestesAg, int totTestesRea, int totalMemVac)
     printf("\n C - Atualizar Estado de Confinamento");
     printf("\n M - Mostrar Dados Membros");
     printf("\n A - Agendar Novo Teste");
+    printf("\n L - Mostrar Confinamentos");
     /*printf("\n G - Gravar dados em ficheiro");
     printf("\n L - Ler dados de ficheiro");*/
     printf("\n\n T - Terminar Programa");
@@ -170,7 +178,7 @@ tipoMembro lerDadosMembro (void){
 
     dadosMembro.estadoVacinacao = -1; /* Identificar que estadoVacinacao se encontra por obter  */
     dadosMembro.estadoConfinamento = -1; /* Identificar que estadoConfinamento se encontra por obter */
-
+    dadosMembro.diasConfinamento = 0;
     return dadosMembro;
 }
 
@@ -230,7 +238,13 @@ void atualizarConfinamento(tipoMembro vetorMembros[],int totMembros){
 
     } while (opcao!=0 && opcao!=1 && opcao!=2);
             vetorMembros[posicao].estadoConfinamento=opcao;
-           printf("\nRegisto efetuado com sucesso");
+            if(opcao==1 || opcao==2){
+            printf("\nIntroduza a data de inicio de confinamento:");
+            vetorMembros[posicao].dataConfinamento = lerData();
+            printf("\nIndique o n de dias de confinamento:");
+            vetorMembros[posicao].diasConfinamento=lerInteiro(1,100);
+            }
+                       printf("\nRegisto efetuado com sucesso");
         }
 
 }
@@ -455,7 +469,73 @@ void displayteste (tipoTeste*testes[]){
 
 */
 
+/*void fEstatistica(tipoMembro vetorMembros[],int totMembros){
 
+int i,numEstudantes,numTecnicos,numDocentes;
+
+for(i=0;i<totMembros;i++){
+
+    if(vetorMembros[i].estadoMembro =='E'){                 // conta o numero de cada tipo de membro existente nas variaveis num numEstudantes,numTecnicos,numDocentes para depois dar printf
+
+        numEstudantes++;
+    }
+
+    if(vetorMembros[i].estadoMembro =='T'){
+
+        numTecnicos++;
+    }
+
+    if(vetorMembros[i].estadoMembro =='D'){
+
+        numDocentes++;
+    }
+
+
+
+}
+
+
+
+}
+*/
+void listarConfinamento(tipoMembro vetorMembros[],int totMembros){
+    int i, confinados;
+
+    confinados = 0 ;
+
+    for(i=0;i<totMembros;i++){
+
+        if(vetorMembros[i].estadoConfinamento == 1 || vetorMembros[i].estadoConfinamento == 2){
+
+            printf("\nMembro:%s\t Utente:%d",vetorMembros[i].nome,vetorMembros[i].numUtente);
+            printf("\tConfinamento:");
+            if (vetorMembros[i].estadoConfinamento == 1)
+            {  
+               printf("\t Quarentena");
+            }  
+            if (vetorMembros[i].estadoConfinamento == 2)
+            {
+               printf("\t Isolamento Profilatico");
+
+            }
+            printf("\t\tData de confinamento:%d/%d/%d",vetorMembros[i].dataConfinamento.dia,vetorMembros[i].dataConfinamento.mes,vetorMembros[i].dataConfinamento.ano);
+
+            printf("\tDuracao da quarentena : %d dias",vetorMembros[i].diasConfinamento);
+
+            confinados++;
+
+        }
+
+
+    }
+
+            if (confinados == 0){
+
+            printf("Sem Registo de Confinamentos");
+
+            }   
+
+}
 
 /* Funcoes para leitura de dados */
 
