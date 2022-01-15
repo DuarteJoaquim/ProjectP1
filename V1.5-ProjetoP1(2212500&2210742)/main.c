@@ -427,7 +427,7 @@ int contaTestesPCR(tipoTeste vetorTestes[],int totTestesAgendados, int totMembro
     return totPCR;
 }
 
-//ssss
+//Comentario do Duarte13123
 
 
 /*!!!!!!!!!!!!FUNCOES EM MANUTENCAO!!!!!!!!!!!!!!!!
