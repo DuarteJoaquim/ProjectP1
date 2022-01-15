@@ -27,8 +27,6 @@ typedef struct
     char estadoMembro; //((E)studante, (D)ocente ou (T)�cnico)
     tipoData anoNascimento;
     int estadoConfinamento;//((0)n�o confinado,(1) quarentena ou (2)isolamento profil�tico)
-    int diasConfinamento;
-    tipoData dataConfinamento;
     int estadoVacinacao;// ((0)sem vacina,(1) dose1,(2) dose2 ou (3)dose3)
     tipoData ultimaVacina;
 
@@ -36,13 +34,12 @@ typedef struct
 
 typedef struct
 {
-    char tipoTeste; //(PCR,Antigenio)
+    int tipoTeste; //(PCR,Antigenio)
     tipoData dataRealizacao;
     int numUtente;
     char resultado;//(p)ositivo, (n)egativo ou (i)nconclusivo
     tipoHora horaColheita;
     char tempDuracao;
-    tipoData dataAgendada;
 } tipoTeste;
 
 
@@ -56,10 +53,9 @@ void atualizarVacinado(tipoMembro vetorMembros[],int totMembros);
 int contarMembrosVacinados(tipoMembro vetorMembros[],int totMembros);
 void mostrarDadosMembros(tipoMembro vetorMembros[], int totMembros);
 
-void agendarTeste(tipoTeste vetorTestes[],int quantidadeTestes);
-int contaTestes (tipoTeste vetorTestes[],int quantidadeTestes,tipoData data);
-
-void listarConfinamento(tipoMembro vetorMembros[],int totMembros);
+tipoTeste lerDadosTeste(void);
+tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[], int *totTestesAgendados, int totMembros);
+int contaTestesPCR(tipoTeste vetorTestes[],int totTestesAgendados, int totMembros, int dataDia, int dataMes, int dataAno);
 
 void limpaBufferStdin(void);
 int lerInteiro(int min, int max);
@@ -71,10 +67,12 @@ tipoData lerData(void);
 int main()
 {
     tipoMembro vetorMembros[MAX_MEMBROS];
-    tipoTeste  vetorTestes[50];
+    tipoTeste  *vetorTestes; /* Ponteiro (para vetor dinamico) */
     int totMembros, totTestesAgendados, totTestesRealizados, totMembrosVacinados;
     char opcao;
 
+    vetorTestes = NULL;    /* Inicializa ponteiro para vetor dinamico */           
+    
     totMembros = 0;				/* inicia contadores */
     totTestesAgendados = 0;
     totTestesRealizados = 0;
@@ -82,8 +80,6 @@ int main()
 
     do
     {
-        //mostrarTestes(vetorTestes,totMembros,&totTestesAgendados,&totTestesRealizados);
-
         opcao = menu(totMembros, totTestesAgendados, totTestesRealizados, totMembrosVacinados);
 
         switch (opcao)
@@ -102,8 +98,8 @@ int main()
         case 'M':
                 mostrarDadosMembros(vetorMembros, totMembros);
             break;
-        case 'L':
-                listarConfinamento(vetorMembros,totMembros);
+        case 'A':
+                vetorTestes = agendarTeste(vetorTestes, vetorMembros, &totTestesAgendados, totMembros);
             break;
         /*case 'G':
            // gravaFicheiroBinario(vetorEstudantes, totEstudantes);
@@ -112,12 +108,12 @@ int main()
         case 'L':
            // totEstudantes=leFicheiroBinario(vetorEstudantes);
             break;
-
       */
 
         }
-    }while(opcao != 'F');
+    }while(opcao != 'T');
 
+    free(vetorTestes); /* Liberta memoria do vetor din�mico */
 
     return 0;
 
@@ -129,16 +125,16 @@ char menu (int totalM, int totTestesAg, int totTestesRea, int totalMemVac)
 
     printf("\n\n\n********* Menu Principal ********* \n");
     printf("\n Quantidade de membros da comunidade: %d \n Quantidade de testes agendados: %d \n Quantidade de testes realizados: %d \n Quantidade de membros vacinados: %d \n", totalM, totTestesAg, totTestesRea, totalMemVac);
-
+    //printf("\n Total Testes: %d \n", totT);
     printf("\n I - Inserir Novo Membro");
     printf("\n V - Atualizar Estado de Vacinacao");
     printf("\n C - Atualizar Estado de Confinamento");
     printf("\n M - Mostrar Dados Membros");
-    printf("\n L - Mostrar Confinamentos");
+    printf("\n A - Agendar Novo Teste");
     /*printf("\n G - Gravar dados em ficheiro");
     printf("\n L - Ler dados de ficheiro");*/
-    printf("\n T - Terminar Programa");
-    printf("\n \t\t Opcao (I,V,C,M ou T(erminar) ) --> ");
+    printf("\n\n T - Terminar Programa");
+    printf("\n\n \t\t Opcao (I,V,C,M,A ou T(erminar) ) --> ");
 
     op = getchar();
     op = toupper(op);
@@ -147,14 +143,14 @@ char menu (int totalM, int totTestesAg, int totTestesRea, int totalMemVac)
     return op; 	/* Devolve opcao selecionada pelo utilizador */
 }
 
-
+//!!!!!!!!!!!!      MEMBRO      !!!!!!!!!!!!!!!!
 
 tipoMembro lerDadosMembro (void){
     tipoMembro dadosMembro;
     char opcaoTipoMembro;
 
     printf("Numero de Utente de Saude: ");
-    dadosMembro.numUtente = lerInteiro(1,9999999);
+    dadosMembro.numUtente = lerInteiro(1,999999);
 
     printf("Nome: ");
     lerString(dadosMembro.nome,50);
@@ -172,9 +168,9 @@ tipoMembro lerDadosMembro (void){
    /* printf("Data de Nascimento: ");
     dadosMembro.anoNascimento = lerData();                EM COMENTARIO TEMPORARIAMENTE      */
 
-    dadosMembro.estadoVacinacao = -1; /* Identificar que estadoVacinacao se encontra como (sem vacina) */
+    dadosMembro.estadoVacinacao = -1; /* Identificar que estadoVacinacao se encontra por obter  */
     dadosMembro.estadoConfinamento = -1; /* Identificar que estadoConfinamento se encontra por obter */
-    dadosMembro.diasConfinamento = 0;
+
     return dadosMembro;
 }
 
@@ -232,17 +228,9 @@ void atualizarConfinamento(tipoMembro vetorMembros[],int totMembros){
 		 printf("\n(0) Nao confinado, (1) Quarentena ou (2) Isolamento profilatico : ");
         scanf("%d", &opcao);
 
-
     } while (opcao!=0 && opcao!=1 && opcao!=2);
             vetorMembros[posicao].estadoConfinamento=opcao;
-
-            if(opcao==1 || opcao==2){
-            printf("\nIntroduza a data de inicio de confinamento:");
-            vetorMembros[posicao].dataConfinamento = lerData();
-            printf("\nIndique o n de dias de confinamento:");
-            vetorMembros[posicao].diasConfinamento=lerInteiro(1,100);
-            }
-            printf("\nRegisto efetuado com sucesso");
+           printf("\nRegisto efetuado com sucesso");
         }
 
 }
@@ -276,11 +264,13 @@ void atualizarVacinado(tipoMembro vetorMembros[],int totMembros){
 
 int contarMembrosVacinados(tipoMembro vetorMembros[], int totMembros){
     int vacinados, i;
+    vacinados = 0;
     for(i=0;i<totMembros;i++){
         if (vetorMembros[i].estadoVacinacao == 1 || vetorMembros[i].estadoVacinacao == 2 || vetorMembros[i].estadoVacinacao == 3){
-                vacinados++;
-        }else{vacinados =+ 0;
-        }
+            vacinados++;
+            }else{
+                vacinados =+ 0;
+            }
     }
     return vacinados;
 }
@@ -352,72 +342,95 @@ void mostrarDadosMembros(tipoMembro vetorMembros[], int totMembros)
 
 /**/
 
-//!!!!!!!!!!!!FUNCOES EM MANUTENCAO!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!         TESTES       !!!!!!!!!!!!!!!!
 
-/*
+tipoTeste lerDadosTeste(void)
+{
+    tipoTeste dadosTeste;
 
-void agendarTeste(tipoTeste vetorTestes[],int quantidadeTestes){
+    printf("Data da Realizacao do Teste: ");
+    dadosTeste.dataRealizacao = lerData(); 
 
-    tipoMembro infoMembro;
-    tipoData data;
-    int posicao,opcao,a;
+    printf("Insira o tipo de Teste\n");
+    printf("(1)PCR ou (2)Antigeneo: ");
+    dadosTeste.tipoTeste = lerInteiro(1,2);
 
-    infoMembro.numUtente= lerInteiro("Insira o n� de utente:", 1,999999);
-    posicao = procuraMembro(vetorMembros,totMembros,infoMembro.numUtente);
-
-    if (posicao == -1){
-           printf("Esse numero de utente n�o existe.\n");
-        }else{
-            vetorTestes.numUtente = infoMembro.numUtente;
-
-            printf("Insira a data do Teste\n");
-
-            data = lerData();
-            a = contatestes(vetorTestes,quantidadeTestes,data);
-
-            if(a>=15){
-
-                printf ("N�o � poss�vel fazer mais testes neste dia");
-            }
-            else{
-
-                do {
-                printf("Insira o tipo de Teste\n");
-                printf("(1)PCR ||(2)Antigeneo");
-                scanf("%d", &opcao);
-
-    }           while (opcao!=1 && opcao!=2);
-            }
-
-            vetorTestes.tipoTeste[quantidadetestes]=opcao;
-
-           printf("\nRegisto efetuado com sucesso");
-
-        }
+    return dadosTeste;
 }
 
+tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[], int *totTestesAgendados, int totMembros){
 
-int contaTestes (tipoTeste vetorTestes[],int quantidadeTestes,tipoData data){
+    tipoTeste dadosTeste;
+    tipoTeste *paux; /* ponteiro para restaurar valor de vFunc  */
+    int dataDia, dataMes, dataAno;
+    int posicao, totalPCR, numUtente;
 
-    int a,i;
-    a = 0;
-    
+    paux = vetorTestes;
 
-    for(i=0; i<quantidadeTestes; i++){
-        if (vetorTestes[i].dataAgendada == data) {
-            i = quantidadeTestes;
-            if(vetorTestes[i].tipoTeste== 1){
+    printf("Numero de Utente: ");
+    numUtente = lerInteiro(1,9999999);
+    posicao = procuraMembro(vetorMembros, totMembros, numUtente);
 
-                 a = a+1;
+    if (posicao == -1){
 
+           printf("Esse numero de utente nao existe.\n");
+
+        }else{
+            vetorTestes = realloc(vetorTestes,(*totTestesAgendados+1)*sizeof(tipoTeste));
+            if (vetorTestes == NULL)
+            {
+                printf ("Erro - Impossivel aumentar o vetor");
+                vetorTestes = paux; 	/* restaura valor de vFunc  */
             }
+            else
+            {
+                dadosTeste = lerDadosTeste();
+                dadosTeste.numUtente = numUtente;
+                    if(dadosTeste.tipoTeste == 1){
+                        int totTestesA = *totTestesAgendados;
+                        dadosTeste.dataRealizacao.dia = dataDia;
+                        dadosTeste.dataRealizacao.mes = dataMes;
+                        dadosTeste.dataRealizacao.ano = dataAno;
+                        totalPCR = contaTestesPCR(vetorTestes, totTestesA, totMembros, dataDia, dataMes, dataAno); // conta testes pcr do msm dia
+                        printf("%d PCR's na Data Inserida", totalPCR);
+                    }
+            }
+
+                if(totalPCR >= 15){
+
+                        printf ("Nao e possivel fazer mais testes neste dia");
+                    // dadosTeste.dataRealizacao = -1;
+                        dadosTeste.numUtente = -1;
+                        dadosTeste.tipoTeste = -1;
+                    }else{  
+                            vetorTestes[*totTestesAgendados] = dadosTeste; // para os dados irem para o ultimo espaco do vetor
+                            (*totTestesAgendados)++;
+                            printf("\nAgendado com sucesso");
+                        }
+                    }
+    return vetorTestes;
+}
+
+int contaTestesPCR(tipoTeste vetorTestes[],int totTestesAgendados, int totMembros, int dataDia, int dataMes, int dataAno){
+
+   // tipoData datacheck1;
+    int totPCR, i, k;
+    totPCR = 1;
+    for(i=0; i < totTestesAgendados; i++){
+        if (dataDia == vetorTestes[i].dataRealizacao.dia && dataMes == vetorTestes[i].dataRealizacao.mes && dataAno == vetorTestes[i].dataRealizacao.ano) {
+                     //if(vetorTestes[i].tipoTeste == 1){
+                        totPCR++;
+                    // }
         }
     }
 
-    return a;
+    return totPCR;
 }
 
+//Comentario do Duarte
 
+
+/*!!!!!!!!!!!!FUNCOES EM MANUTENCAO!!!!!!!!!!!!!!!!
 
 void mostrartestes(tipoTeste *testes.int quantidadeTestes){
 
@@ -443,73 +456,7 @@ void displayteste (tipoTeste*testes[]){
 */
 
 
-/*void fEstatistica(tipoMembro vetorMembros[],int totMembros){
 
-int i,numEstudantes,numTecnicos,numDocentes;
-
-for(i=0;i<totMembros;i++){
-
-    if(vetorMembros[i].estadoMembro =='E'){                 // conta o numero de cada tipo de membro existente nas variaveis num numEstudantes,numTecnicos,numDocentes para depois dar printf
-
-        numEstudantes++;
-    }
-
-    if(vetorMembros[i].estadoMembro =='T'){
-
-        numTecnicos++;
-    }
-
-    if(vetorMembros[i].estadoMembro =='D'){
-
-        numDocentes++;
-    }
-
-
-
-}
-
-
-
-}
-*/
-void listarConfinamento(tipoMembro vetorMembros[],int totMembros){
-    int i, confinados;
-
-    confinados = 0 ;
-
-    for(i=0;i<totMembros;i++){
-
-        if(vetorMembros[i].estadoConfinamento == 1 || vetorMembros[i].estadoConfinamento == 2){
-
-            printf("\nMembro:%s\t Utente:%d",vetorMembros[i].nome,vetorMembros[i].numUtente);
-            printf("\tConfinamento:");
-            if (vetorMembros[i].estadoConfinamento == 1)
-            {  
-               printf("\t Quarentena");
-            }  
-            if (vetorMembros[i].estadoConfinamento == 2)
-            {
-               printf("\t Isolamento Profilatico");
-
-            }
-            printf("\t\tData de confinamento:%d/%d/%d",vetorMembros[i].dataConfinamento.dia,vetorMembros[i].dataConfinamento.mes,vetorMembros[i].dataConfinamento.ano);
-
-            printf("\tDuracao da quarentena : %d dias",vetorMembros[i].diasConfinamento);
-
-            confinados++;
-
-        }
-
-
-    }
-
-            if (confinados == 0){
-
-            printf("Sem Registo de Confinamentos");
-
-            }   
-
-}
 /* Funcoes para leitura de dados */
 
 void lerString(char vetor[80], int max){
@@ -546,7 +493,7 @@ int lerInteiro(int min, int max){
     return numero;
 }
 
-void limpaBufferStdin(void) 	/* Chamar ap�s leituras de dados atrav�s do teclado */{
+void limpaBufferStdin(void) 	/* Chamar apos leituras de dados atraves do teclado */{
     char lixo;
 
     do
@@ -560,8 +507,8 @@ tipoData lerData(void){
     tipoData data;
     int maxDiaMes;
 
-    printf("\n Ano (%d a %d): ",1900,2100);
-    data.ano = lerInteiro(1900,2100);
+    printf("\n Ano (%d a %d): ",2018,2030);
+    data.ano = lerInteiro(2018,2030);
 
     printf("Mes (%d a %d): ",1,12);
     data.mes = lerInteiro(1,12);
