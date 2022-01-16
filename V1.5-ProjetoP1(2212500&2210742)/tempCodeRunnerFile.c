@@ -1,1 +1,3 @@
-(*totTestesAgendados)++;
+            case 'H':
+                lerHora();
+            break;

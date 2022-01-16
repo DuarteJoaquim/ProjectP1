@@ -41,7 +41,7 @@ typedef struct
     int numUtente;
     char resultado;//(p)ositivo, (n)egativo ou (i)nconclusivo
     tipoHora horaColheita;
-    char tempDuracao;
+    int tempDuracao;
 } tipoTeste;
 
 
@@ -55,8 +55,7 @@ void atualizarVacinado(tipoMembro vetorMembros[],int totMembros);
 int contarMembrosVacinados(tipoMembro vetorMembros[],int totMembros);
 void mostrarDadosMembros(tipoMembro vetorMembros[], int totMembros);
 
-tipoTeste lerDadosTeste(void);
-tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[], int *totTestesAgendados, int totMembros);
+tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[],int *totTestes, int *totTestesAgendados, int totMembros);
 int contaTestesPCR(tipoTeste vetorTestes[],int totTestesAgendados, int totMembros, int dataDia, int dataMes, int dataAno);
 
 void listarConfinamento(tipoMembro vetorMembros[],int totMembros);
@@ -65,6 +64,7 @@ void limpaBufferStdin(void);
 int lerInteiro(int min, int max);
 void lerString(char vetor[], int max);
 tipoData lerData(void);
+tipoHora lerHora(void);
 
 
 
@@ -72,12 +72,13 @@ int main()
 {
     tipoMembro vetorMembros[MAX_MEMBROS];
     tipoTeste  *vetorTestes; /* Ponteiro (para vetor dinamico) */
-    int totMembros, totTestesAgendados, totTestesRealizados, totMembrosVacinados;
+    int totMembros, totTestes, totTestesAgendados, totTestesRealizados, totMembrosVacinados;
     char opcao;
 
     vetorTestes = NULL;    /* Inicializa ponteiro para vetor dinamico */           
     
     totMembros = 0;				/* inicia contadores */
+    totTestes = 0;
     totTestesAgendados = 0;
     totTestesRealizados = 0;
     totMembrosVacinados = 0;
@@ -106,7 +107,10 @@ int main()
                 listarConfinamento(vetorMembros,totMembros);
             break;
         case 'A':
-                vetorTestes = agendarTeste(vetorTestes, vetorMembros, &totTestesAgendados, totMembros);
+                vetorTestes = agendarTeste(vetorTestes, vetorMembros, &totTestes, &totTestesAgendados , totMembros);
+            break;
+        case 'H':
+                lerHora();
             break;
         /*case 'G':
            // gravaFicheiroBinario(vetorEstudantes, totEstudantes);
@@ -356,21 +360,23 @@ void mostrarDadosMembros(tipoMembro vetorMembros[], int totMembros)
 
 //!!!!!!!!!!!!         TESTES       !!!!!!!!!!!!!!!!
 
-tipoTeste lerDadosTeste(void)
-{
-    tipoTeste dadosTeste;
+int contaTestesPCR(tipoTeste vetorTestes[],int totTestesAgendados, int totMembros, int dataDia, int dataMes, int dataAno){
 
-    printf("Data da Realizacao do Teste: ");
-    dadosTeste.dataRealizacao = lerData(); 
+   // tipoData datacheck1;
+    int totPCR, i, k;
+    totPCR = 1;
+    for(i=0; i < totTestesAgendados; i++){
+        if (dataDia == vetorTestes[i].dataRealizacao.dia && dataMes == vetorTestes[i].dataRealizacao.mes && dataAno == vetorTestes[i].dataRealizacao.ano) {
+                     //if(vetorTestes[i].tipoTeste == 1){
+                        totPCR++;
+                    // }
+        }
+    }
 
-    printf("Insira o tipo de Teste\n");
-    printf("(1)PCR ou (2)Antigeneo: ");
-    dadosTeste.tipoTeste = lerInteiro(1,2);
-
-    return dadosTeste;
+    return totPCR;
 }
 
-tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[], int *totTestesAgendados, int totMembros){
+tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[],int *totTestes, int *totTestesAgendados, int totMembros){
 
     tipoTeste dadosTeste;
     tipoTeste *paux; /* ponteiro para restaurar valor de vFunc  */
@@ -388,16 +394,24 @@ tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[], int *
            printf("Esse numero de utente nao existe.\n");
 
         }else{
-            vetorTestes = realloc(vetorTestes,(*totTestesAgendados+1)*sizeof(tipoTeste));
+                printf("Data da Realizacao do Teste: ");
+                tipoData dataRealizacao = lerData(); 
+
+                vetorTestes = realloc(vetorTestes,(*totTestes+1)*sizeof(tipoTeste));
+
             if (vetorTestes == NULL)
             {
                 printf ("Erro - Impossivel aumentar o vetor");
-                vetorTestes = paux; 	/* restaura valor de vFunc  */
+                vetorTestes = paux; 	/* restaura valor de vFunc caso nao acrescente 1 espaco no vetor  */
             }
             else
             {
-                dadosTeste = lerDadosTeste();
+                printf("Insira o tipo de Teste\n");
+                printf("(1)PCR ou (2)Antigeneo: ");
+                dadosTeste.tipoTeste = lerInteiro(1,2);
                 dadosTeste.numUtente = numUtente;
+                dadosTeste.dataRealizacao = dataRealizacao;
+
                     if(dadosTeste.tipoTeste == 1){
                         int totTestesA = *totTestesAgendados;
                         dadosTeste.dataRealizacao.dia = dataDia;
@@ -414,29 +428,18 @@ tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[], int *
                     // dadosTeste.dataRealizacao = -1;
                         dadosTeste.numUtente = -1;
                         dadosTeste.tipoTeste = -1;
+                        dadosTeste.dataRealizacao.dia = -1;
+                        dadosTeste.dataRealizacao.mes = -1;
+                        dadosTeste.dataRealizacao.ano = -1;
+                        
                     }else{  
-                            vetorTestes[*totTestesAgendados] = dadosTeste; // para os dados irem para o ultimo espaco do vetor
+                            vetorTestes[*totTestes] = dadosTeste; // para os dados irem para o ultimo espaco do vetor
                             (*totTestesAgendados)++;
+                            (*totTestes)++;
                             printf("\nAgendado com sucesso");
                         }
                     }
     return vetorTestes;
-}
-
-int contaTestesPCR(tipoTeste vetorTestes[],int totTestesAgendados, int totMembros, int dataDia, int dataMes, int dataAno){
-
-   // tipoData datacheck1;
-    int totPCR, i, k;
-    totPCR = 1;
-    for(i=0; i < totTestesAgendados; i++){
-        if (dataDia == vetorTestes[i].dataRealizacao.dia && dataMes == vetorTestes[i].dataRealizacao.mes && dataAno == vetorTestes[i].dataRealizacao.ano) {
-                     //if(vetorTestes[i].tipoTeste == 1){
-                        totPCR++;
-                    // }
-        }
-    }
-
-    return totPCR;
 }
 
 /*!!!!!!!!!!!!FUNCOES EM MANUTENCAO!!!!!!!!!!!!!!!!
@@ -613,4 +616,18 @@ tipoData lerData(void){
     data.dia = lerInteiro(1, maxDiaMes);
 
     return data;
+}
+
+tipoHora lerHora(void){
+    tipoHora horatype;
+
+    printf("\n Horas (%d a %d): ",0,23);
+    horatype.hora = lerInteiro(0,23);
+
+    printf("\n Minutos (%d a %d): ",0,59);
+    horatype.min = lerInteiro(0,59);   
+
+        printf("%dh",horatype.hora);
+        printf("%dm",horatype.min);
+return horatype;
 }
