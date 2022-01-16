@@ -55,7 +55,7 @@ void atualizarVacinado(tipoMembro vetorMembros[],int totMembros);
 int contarMembrosVacinados(tipoMembro vetorMembros[],int totMembros);
 void mostrarDadosMembros(tipoMembro vetorMembros[], int totMembros);
 
-int contaTestesPCR(tipoTeste vetorTestes[],int totTestesAgendados, int totMembros, int dataDia, int dataMes, int dataAno);
+int contaTestesPCR(tipoTeste vetorTestes[],int totTestes, int totMembros, int dataDia, int dataMes, int dataAno);
 tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[],int *totTestes, int *totTestesAgendados, int totMembros);
 tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes,int *totTestes, int *totTestesRealizados, int *totTestesAgendados, tipoMembro vetorMembros[], int totMembros);
 
@@ -353,12 +353,12 @@ void mostrarDadosMembros(tipoMembro vetorMembros[], int totMembros)
 
 //!!!!!!!!!!!!         TESTES       !!!!!!!!!!!!!!!!
 
-int contaTestesPCR(tipoTeste vetorTestes[],int totTestesAgendados, int totMembros, int dataDia, int dataMes, int dataAno){
+int contaTestesPCR(tipoTeste vetorTestes[],int totTestes, int totMembros, int dataDia, int dataMes, int dataAno){
 
    // tipoData datacheck1;
     int totPCR, i, k;
     totPCR = 1;
-    for(i=0; i < totTestesAgendados; i++){
+    for(i=0; i < totTestes; i++){
         if (dataDia == vetorTestes[i].dataRealizacao.dia && dataMes == vetorTestes[i].dataRealizacao.mes && dataAno == vetorTestes[i].dataRealizacao.ano) {
                      //if(vetorTestes[i].tipoTeste == 1){
                         totPCR++;
@@ -407,21 +407,18 @@ tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[],int *t
                 dadosTeste.dataRealizacao.mes = dataRealizacao.mes;
                 dadosTeste.dataRealizacao.ano = dataRealizacao.ano;
 
-                printf("%d dia", dadosTeste.dataRealizacao.dia);
-                printf("%d mes", dadosTeste.dataRealizacao.mes);
-                printf("%d ano",dadosTeste.dataRealizacao.ano);
+                printf("%d dia /t", dadosTeste.dataRealizacao.dia); //TESTE//TESTE//TESTE//TESTE//TESTE
+                printf("%d mes /t", dadosTeste.dataRealizacao.mes);//TESTE//TESTE//TESTE//TESTE//TESTE
+                printf("%d ano /t",dadosTeste.dataRealizacao.ano);//TESTE//TESTE//TESTE//TESTE//TESTE
 
                     if(dadosTeste.tipoTeste == 1){
-                        int totTestesA = *totTestesAgendados;
                         dataDia = dadosTeste.dataRealizacao.dia;
                         dataMes = dadosTeste.dataRealizacao.mes;
                         dataAno = dadosTeste.dataRealizacao.ano;
-                        totalPCR = contaTestesPCR(vetorTestes, totTestesA, totMembros, dataDia, dataMes, dataAno); // conta testes pcr do msm dia
+                        int totT = *totTestes;
+                        totalPCR = contaTestesPCR(vetorTestes, totT, totMembros, dataDia, dataMes, dataAno); // conta testes pcr do msm dia
                         printf("%d PCR's na Data Inserida", totalPCR);
-                    }
-            }
-
-                if(totalPCR >= 15){
+                    }else if(totalPCR >= 15){
 
                         printf ("Nao e possivel fazer mais testes neste dia");
                     // dadosTeste.dataRealizacao = -1;
@@ -430,8 +427,8 @@ tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[],int *t
                         dadosTeste.dataRealizacao.dia = -1;
                         dadosTeste.dataRealizacao.mes = -1;
                         dadosTeste.dataRealizacao.ano = -1;
-
-                    }else{  
+                         }
+                }
                             vetorTestes[*totTestes].tipoTeste = dadosTeste.tipoTeste; // para os dados irem para o ultimo espaco do vetor
                             vetorTestes[*totTestes].numUtente = dadosTeste.numUtente; 
                             vetorTestes[*totTestes].dataRealizacao.dia = dadosTeste.dataRealizacao.dia;
@@ -443,7 +440,7 @@ tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[],int *t
                             (*totTestesAgendados)++;
                             (*totTestes)++;
                             printf("\nAgendado com sucesso");
-                        }
+                        
                     }
     return vetorTestes;
 }
@@ -495,8 +492,7 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes,int *totTestes, int *tot
                         else{                     //caso nao exista adiciona +1 espaco no vetor
 
                             vetorTestes = realloc(vetorTestes,(*totTestes+1)*sizeof(tipoTeste));
-                            }
-                            
+
                         if (vetorTestes == NULL)
                         {
                             printf ("Erro - Impossivel aumentar o vetor");
@@ -524,33 +520,35 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes,int *totTestes, int *tot
                                 printf("Tempo de Duracao(0min a 59min): ");
                                 dadosTeste.tempDuracao = lerInteiro(0,59);
 
+                                 (*totTestesRealizados)++;
+
 
                                     if(dadosTeste.tipoTeste == 1){
-                                        int totTestesA = *totTestesAgendados;
-                                        dataDia = dadosTeste.dataRealizacao.dia;
-                                        dataMes = dadosTeste.dataRealizacao.mes;
-                                        dataAno = dadosTeste.dataRealizacao.ano;
-                                        totalPCR = contaTestesPCR(vetorTestes, totTestesA, totMembros, dataDia, dataMes, dataAno); // conta testes pcr do msm dia
-                                        printf("%d PCR's na Data Inserida", totalPCR);
+                                            dataDia = dadosTeste.dataRealizacao.dia;
+                                            dataMes = dadosTeste.dataRealizacao.mes;
+                                            dataAno = dadosTeste.dataRealizacao.ano;
+                                            int totT = *totTestes;
+                                            totalPCR = contaTestesPCR(vetorTestes, totT, totMembros, dataDia, dataMes, dataAno); // conta testes pcr do msm dia
+                                            printf("%d PCR's na Data Inserida", totalPCR);
+                                        }else if(totalPCR >= 15){
+
+                                            printf ("Nao e possivel fazer mais testes neste dia");
+                                        // dadosTeste.dataRealizacao = -1;
+                                            dadosTeste.numUtente = -1;
+                                            dadosTeste.tipoTeste = -1;
+                                            dadosTeste.dataRealizacao.dia = -1;
+                                            dadosTeste.dataRealizacao.mes = -1;
+                                            dadosTeste.dataRealizacao.ano = -1;
+
+                                            dadosTeste.resultado = '\0';
+                                            dadosTeste.horaColheita.hora = -1; 
+                                            dadosTeste.horaColheita.min = -1; 
+                                            dadosTeste.tempDuracao = -1;
+                                         }
                                     }
-                            }
-
-                            if(totalPCR >= 15){
-
-                                    printf ("Nao e possivel fazer mais testes neste dia");
+                             }
                                     
-                                    dadosTeste.numUtente = -1;
-                                    dadosTeste.tipoTeste = -1;
-                                    dadosTeste.dataRealizacao.dia = -1;
-                                    dadosTeste.dataRealizacao.mes = -1;
-                                    dadosTeste.dataRealizacao.ano = -1;
-
-                                    dadosTeste.resultado = '\0';
-                                    dadosTeste.horaColheita.hora = -1; 
-                                    dadosTeste.horaColheita.min = -1; 
-                                    dadosTeste.tempDuracao = -1;
-
-                                }else{  
+                        }
                                         vetorTestes[*totTestes].tipoTeste = dadosTeste.tipoTeste; // para os dados irem para o ultimo espaco do vetor
                                         vetorTestes[*totTestes].numUtente = dadosTeste.numUtente; 
                                         vetorTestes[*totTestes].dataRealizacao.dia = dadosTeste.dataRealizacao.dia;
@@ -559,11 +557,8 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes,int *totTestes, int *tot
                                         vetorTestes[*totTestes].resultado = dadosTeste.resultado; 
                                         vetorTestes[*totTestes].horaColheita = dadosTeste.horaColheita; 
                                         vetorTestes[*totTestes].tempDuracao = dadosTeste.tempDuracao; 
-                                        (*totTestesAgendados)++;
                                         (*totTestes)++;
                                         printf("\nAgendado com sucesso");
-                                    }
-                        }
                     
                 }
     return vetorTestes;
