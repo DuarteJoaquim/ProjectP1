@@ -1,3 +1,1 @@
-            case 'H':
-                lerHora();
-            break;
+dataRealizacao
