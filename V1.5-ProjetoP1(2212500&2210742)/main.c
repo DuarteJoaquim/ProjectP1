@@ -646,7 +646,7 @@ void gravaFicheiroBinario(tipoMembro vetorMembros[MAX_MEMBROS],int totMembros,ti
         }
         fclose(ficheiro);
 
-// FICHEIRO TESTES
+// FICHEIRO TESTES 1
     ficheiro1=fopen("dadosTestes.dat","wb");
     if (ficheiro == NULL) {
 		printf("Erro abrir ficheiro");
