@@ -790,6 +790,7 @@ void mostrarTestesUtilizador(tipoTeste *vetorTestes,int *totTestes, tipoMembro v
 {
     int i, k, j, numUtente, posicao, quantPositivos;
     int total;
+    total = *totTestes;
 
     printf("\n Numero de Utente: ");
     numUtente = lerInteiro(1,9999999);
@@ -915,18 +916,17 @@ void mostrarTestesUtilizador(tipoTeste *vetorTestes,int *totTestes, tipoMembro v
 
                                             printf("\t %02d:%02d \t",  vetorTestes[i].horaColheita.hora, vetorTestes[i].horaColheita.min );
                                             printf("\t %02d minutos\n",  vetorTestes[i].tempDuracao);
-                                }else{
+                                }else if(vetorTestes[i].tipoTeste == -1){
                                     printf("\n Nao existem testes agendados ou realizados por esse membro!");
                                 }
                      }
                      for (j=0; j < total; j++)
                     {
-                        numUtente = vetorTestes[j].numUtente;
-                        quantPositivos = contaPositivos(vetorTestes, totTestes, numUtente);
+                        quantPositivos = contaPositivos(vetorTestes, total, numUtente);
                         if (quantPositivos != 0)
                         {
                             total = j;
-                            printf("%d", quantPositivos);
+                            printf("\n\t %d Teste(s) Positivo(s)", quantPositivos);
                         }else{
                             printf("O Membro nao teve testes positivos");
                         }
