@@ -966,4 +966,37 @@ tipoHora lerHora(void){
     printf("\n Minutos (%d a %d): ",0,59);
     horatype.min = lerInteiro(0,59);   
 return horatype;
+void gravaFicheiroBinario(tipoMembro vetorMembros[MAX_MEMBROS],int totMembros,tipoTeste *vetorTestes,int totTestes){
+	FILE *ficheiro,*ficheiro1;
+	int quantEscritaParaFicheiro;
+	ficheiro=fopen("dadosMembros.dat","wb");
+	if (ficheiro == NULL) {
+		printf("Erro abrir ficheiro");
+	}else{
+		quantEscritaParaFicheiro = fwrite(&totMembros,sizeof(int),1,ficheiro);
+        if (quantEscritaParaFicheiro != 1) {
+            printf("Erro ao escrever a quantidade de estudantes");
+        }
+		quantEscritaParaFicheiro = fwrite(vetorMembros,sizeof(tipoMembro),totMembros,ficheiro);
+        if (quantEscritaParaFicheiro != totMembros) {
+            printf("Erro ao escrever dados de estudntes");
+        }
+        fclose(ficheiro);
+
+// FICHEIRO TESTES 1
+    ficheiro1=fopen("dadosTestes.dat","wb");
+    if (ficheiro == NULL) {
+		printf("Erro abrir ficheiro");
+	}else{
+
+        quantEscritaParaFicheiro = fwrite(&totTestes,sizeof(int),1,ficheiro1);
+        if (quantEscritaParaFicheiro != totTestes) {
+            printf("Erro ao escrever dados de estudntes");
+        }
+        quantEscritaParaFicheiro = fwrite(vetorTestes,sizeof(tipoTeste),totTestes,ficheiro1);
+        if (quantEscritaParaFicheiro != totTestes) {
+            printf("Erro ao escrever dados de estudntes");
+        }
+		fclose(ficheiro1);
+    }
 }
