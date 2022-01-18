@@ -393,8 +393,6 @@ tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[],int *t
            printf("Esse numero de utente nao existe.\n");
 
         }else{
-                printf("Data da Realizacao do Teste: ");
-                tipoData dataRealizacao = lerData(); 
                  printf("%d TESTES ANTES DO REALLOC NO agendarTeste \t", *totTestes); //TESTE//TESTE//TESTE//TESTE//TESTE
 
                 vetorTestes = realloc(vetorTestes,(*totTestes+1)*sizeof(tipoTeste));
@@ -406,6 +404,8 @@ tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[],int *t
             }
             else
             {
+                printf("Data da Realizacao do Teste: ");
+                tipoData dataRealizacao = lerData(); 
                 printf("\nInsira o tipo de Teste\n");
                 printf("(1)PCR ou (2)Antigeneo: ");
                 dadosTeste.tipoTeste = lerInteiro(1,2);
@@ -454,10 +454,11 @@ tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[],int *t
     return vetorTestes;
 }
 
-tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes,int *totTestes, int *totTestesRealizados, int *totTestesAgendados, tipoMembro vetorMembros[], int totMembros){
+tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *totTestesRealizados, int *totTestesAgendados, tipoMembro vetorMembros[], int totMembros){
 
     tipoTeste dadosTeste;
     tipoTeste *paux; /* ponteiro para restaurar valor de vFunc  */
+    int total = *totTestes;
     int dataDia, dataMes, dataAno;
     int posicao, totalPCR, numUtente, pos;
     char opResultado;
@@ -523,8 +524,8 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes,int *totTestes, int *tot
                                                 vetorTestes[*totTestes].horaColheita = dadosTeste.horaColheita; 
                                                 vetorTestes[*totTestes].tempDuracao = dadosTeste.tempDuracao; 
 
-                                                printf(" \n %d numUtente do ultimo membro inserido",vetorTestes[*totTestes].numUtente);
-                                                printf(" \n %d numUtente do ultimo membro inserido",vetorTestes[*totTestes].numUtente);  
+                                                // printf(" \n %d numUtente do ultimo membro inserido",vetorTestes[*totTestes].numUtente); // #TESTE# // #TESTE# // #TESTE# // #TESTE# // #TESTE#
+                                                // printf(" \n %d numUtente do ultimo membro inserido",vetorTestes[*totTestes].numUtente);  // #TESTE# // #TESTE# // #TESTE# // #TESTE# // #TESTE#
 
                                                 (*totTestes)++;
                                                 printf(" \n %d totTestes", *totTestes);
@@ -535,11 +536,12 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes,int *totTestes, int *tot
                         //tipoData dataRealizacao = lerData(); 
                          //printf("NAO CHEGOU AO FOR");
                          // printf(" \n %d totTestes", *totTestes);
-                                for(pos=0;pos < *totTestes; pos++){ 
+                                for(pos=0;pos < total; pos++){ 
                                             printf("\n %d Dia da posicao Encontrada", vetorTestes[pos].dataRealizacao.dia);
                                             printf(" \n %d Dia registado \n", dataRealizacao.dia);
-                                    if(vetorTestes[pos].numUtente == numUtente && vetorTestes[pos].dataRealizacao.dia == dataRealizacao.dia && vetorTestes[pos].dataRealizacao.mes == dataRealizacao.mes && vetorTestes[pos].dataRealizacao.ano == dataRealizacao.ano){ //CASO numUtente && data ja existam em um espaco no vetor
-                                            if(vetorTestes[pos].resultado == '\0'){ //        verificar se utente ja realizou teste nesse msm dia
+                                    if(vetorTestes[pos].resultado == '\0' && vetorTestes[pos].numUtente == numUtente && vetorTestes[pos].dataRealizacao.dia == dataRealizacao.dia && vetorTestes[pos].dataRealizacao.mes == dataRealizacao.mes && vetorTestes[pos].dataRealizacao.ano == dataRealizacao.ano){ //CASO numUtente && data ja existam em um espaco no vetor
+                     //        verificar se utente ja realizou teste nesse msm dia
+                                        total = pos; // parar loop(for)
                                                 do{
                                                     printf("Resultado{(p)ositivo, (n)egativo ou (i)nconclusivo} : ");
                                                     scanf("%c", &opResultado);    
@@ -556,13 +558,15 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes,int *totTestes, int *tot
 
                                                 (*totTestesAgendados)--;
                                                 (*totTestesRealizados)++;
-                                            }else{
-                                                printf("TESTE REALIZADO PELO UTENTE NESSE MESMO DIA");
-                                                (*totTestes)--;
-                                            }
+                                                // if Condicao, break the loop
+                                               /* if (vetorTestes[pos].numUtente == numUtente) {
+                                                    (*totTestes)--;
+                                                    break;
+                                                }*/
                                         }
                                     else{                     //caso nao exista adiciona +1 espaco no vetor
                                     // printf(" CHEGOU AO ELSE");
+                                        total = pos; // parar loop(for)
                                         vetorTestes = realloc(vetorTestes,(*totTestes+1)*sizeof(tipoTeste));
 
                                     if (vetorTestes == NULL)
@@ -617,9 +621,12 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes,int *totTestes, int *tot
                                                         dadosTeste.horaColheita.min = -1; 
                                                         dadosTeste.tempDuracao = -1;
                                                     }
+                                                    
                                                 }
-                                        }
-                                                
+                                        }    
+                                       /* if (vetorTestes[pos].numUtente == numUtente) {
+                                                    break;
+                                                    }   */
                                     }
                                         vetorTestes[*totTestes].tipoTeste = dadosTeste.tipoTeste; // para os dados irem para o ultimo espaco do vetor
                                         vetorTestes[*totTestes].numUtente = dadosTeste.numUtente; 
@@ -636,6 +643,7 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes,int *totTestes, int *tot
                                         (*totTestes)++;
                                         printf(" \n %d totTestes", *totTestes);
                                         printf("\nTeste Realizado com sucesso");
+
                                
                                 }
                     
@@ -693,8 +701,10 @@ void mostrarDadosTestes(tipoTeste *vetorTestes,int *totTestes, tipoMembro vetorM
                                     printf("\t\t Antigenio");
                                 }
 
-                            printf("\t\t %02d/%02d/%4d\n", vetorTestes[i].dataRealizacao.dia, vetorTestes[i].dataRealizacao.mes, vetorTestes[i].dataRealizacao.ano );
-                }else{
+                            printf("\t\t\t %02d/%02d/%4d\n", vetorTestes[i].dataRealizacao.dia, vetorTestes[i].dataRealizacao.mes, vetorTestes[i].dataRealizacao.ano );
+                }
+                
+                else if(vetorTestes[i].resultado != '\0'){
 
                             printf("-----------Registos Testes Realizados-----------");
                             printf("\nNumero Utente \t Nome \t Tipo de Membro \t Tipo Teste Realizado \t Data de Realizacao \t Resultado \t Hora da Colheita \t Duracao");
@@ -731,7 +741,7 @@ void mostrarDadosTestes(tipoTeste *vetorTestes,int *totTestes, tipoMembro vetorM
                                         printf("\t\t Antigenio");
                                     }
 
-                                printf("\t\t %02d/%02d/%4d \t", vetorTestes[i].dataRealizacao.dia, vetorTestes[i].dataRealizacao.mes, vetorTestes[i].dataRealizacao.ano );
+                                printf("\t\t\t %02d/%02d/%4d \t", vetorTestes[i].dataRealizacao.dia, vetorTestes[i].dataRealizacao.mes, vetorTestes[i].dataRealizacao.ano );
 
                                 
                                 if(vetorTestes[i].resultado == 'P')
