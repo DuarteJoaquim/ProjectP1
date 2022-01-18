@@ -61,6 +61,12 @@ int contaTestesPCR(tipoTeste vetorTestes[],int totTestesAgendados, int totMembro
 
 void listarConfinamento(tipoMembro vetorMembros[],int totMembros);
 
+
+
+void gravaFicheiroBinario(tipoMembro vetorMembros[MAX_MEMBROS],int totMembros,tipoTeste *vetorTestes,int totTestes);
+int leFicheiroBinario(tipoMembro vetorMembros[MAX_MEMBROS]);
+
+
 void limpaBufferStdin(void);
 int lerInteiro(int min, int max);
 void lerString(char vetor[], int max);
@@ -108,14 +114,15 @@ int main()
         case 'A':
                 vetorTestes = agendarTeste(vetorTestes, vetorMembros, &totTestesAgendados, totMembros);
             break;
-        /*case 'G':
-           // gravaFicheiroBinario(vetorEstudantes, totEstudantes);
+        case 'G':
+                 gravaFicheiroBinario(vetorMembros,totMembros,vetorTestes,totTestes);
            // gravaFicheiroTexto(vetorEstudantes, totEstudantes);
             break;
-        case 'L':
-           // totEstudantes=leFicheiroBinario(vetorEstudantes);
+        case 'R':
+                totMembros = leFicheiroBinario(vetorMembros,vetorTestes,&totTestes);
+           // totEstudantes=leFicheiroBinario(vetorEstudantes);leFicheiroBinario(tipoMembro vetorMembros[MAX_MEMBROS],tipoTeste*vetorTestes,*totTestes)
             break;
-      */
+      
 
         }
     }while(opcao != 'T');
@@ -616,3 +623,83 @@ tipoData lerData(void){
 
     return data;
 }
+
+//FICHEIROS          
+
+
+
+
+void gravaFicheiroBinario(tipoMembro vetorMembros[MAX_MEMBROS],int totMembros,tipoTeste *vetorTestes,int totTestes){
+	FILE *ficheiro,*ficheiro1;
+	int quantEscritaParaFicheiro;
+	ficheiro=fopen("dadosMembros.dat","wb");
+	if (ficheiro == NULL) {
+		printf("Erro abrir ficheiro");
+	}else{
+		quantEscritaParaFicheiro = fwrite(&totMembros,sizeof(int),1,ficheiro);
+        if (quantEscritaParaFicheiro != 1) {
+            printf("Erro ao escrever a quantidade de estudantes");
+        }
+		quantEscritaParaFicheiro = fwrite(vetorMembros,sizeof(tipoMembro),totMembros,ficheiro);
+        if (quantEscritaParaFicheiro != totMembros) {
+            printf("Erro ao escrever dados de estudntes");
+        }
+        fclose(ficheiro);
+
+// FICHEIRO TESTES
+    ficheiro1=fopen("dadosTestes.dat","wb");
+    if (ficheiro == NULL) {
+		printf("Erro abrir ficheiro");
+	}else{
+
+        quantEscritaParaFicheiro = fwrite(&totTestes,sizeof(int),1,ficheiro1);
+        if (quantEscritaParaFicheiro != totTestes) {
+            printf("Erro ao escrever dados de estudntes");
+        }
+        quantEscritaParaFicheiro = fwrite(vetorTestes,sizeof(tipoTeste),totTestes,ficheiro1);
+        if (quantEscritaParaFicheiro != totTestes) {
+            printf("Erro ao escrever dados de estudntes");
+        }
+		fclose(ficheiro1);
+    }
+}
+
+int leFicheiroBinario(tipoMembro vetorMembros[MAX_MEMBROS],tipoTeste*vetorTestes,*totTestes){
+    FILE *ficheiro,ficheiro1;
+    int numElementos,numElementos1;
+    int quantLeituraDeFicheiro;
+    ficheiro=fopen("dadosMembros.dat","rb");
+    if (ficheiro == NULL) {
+        printf ("Erro abrir ficheiro");
+    }else{
+        quantLeituraDeFicheiro = fread(&numElementos,sizeof(int),1,ficheiro);
+        if (quantLeituraDeFicheiro != 1) {
+            printf("Erro ao obter informacao da quantidade de estudantes");
+        }
+        quantLeituraDeFicheiro = fread(vetorMembros,sizeof(tipoMembro),numElementos,ficheiro);
+        if (quantLeituraDeFicheiro != numElementos) {
+            printf("Erro ao obter informacao dos estudantes");
+        }
+        fclose(ficheiro);
+
+//Ficheiro Testes
+
+    ficheiro1=fopen("dadosTestes.dat","rb");
+    if (ficheiro == NULL) {
+        printf ("Erro abrir ficheiro");
+    }else{
+        quantLeituraDeFicheiro = fread(&numElementos1,sizeof(int),1,ficheiro1);
+        if (quantLeituraDeFicheiro != 1) {
+            printf("Erro ao obter informacao da quantidade de estudantes");
+        }
+        quantLeituraDeFicheiro = fread(vetorTestes,sizeof(tipoTeste),numElementos1,ficheiro1);
+        if (quantLeituraDeFicheiro != numElementos1) {
+            printf("Erro ao obter informacao dos estudantes");
+        }
+
+        *totTestes= numElementos1
+        fclose(ficheiro1);
+    }
+    return numElementos;
+}
+
