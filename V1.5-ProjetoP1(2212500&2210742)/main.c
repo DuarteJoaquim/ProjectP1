@@ -63,6 +63,12 @@ int contaPositivos(tipoTeste *vetorTestes, int totTestes, int utente);
 
 void listarConfinamento(tipoMembro vetorMembros[],int totMembros);
 
+
+
+void gravaFicheiroBinario(tipoMembro vetorMembros[MAX_MEMBROS],int totMembros,tipoTeste *vetorTestes,int totTestes);
+int leFicheiroBinario(tipoMembro vetorMembros[MAX_MEMBROS]);
+
+
 void limpaBufferStdin(void);
 int lerInteiro(int min, int max);
 void lerString(char vetor[], int max);
