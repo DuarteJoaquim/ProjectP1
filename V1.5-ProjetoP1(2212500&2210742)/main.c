@@ -59,6 +59,7 @@ int contaTestesPCR(tipoTeste vetorTestes[],int totTestes, int totMembros, int da
 tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[],int *totTestes, int *totTestesAgendados, int totMembros);
 tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes,int *totTestes, int *totTestesRealizados, int *totTestesAgendados, tipoMembro vetorMembros[], int totMembros);
 void mostrarDadosTestes(tipoTeste *vetorTestes,int *totTestes, tipoMembro vetorMembros[], int totMembros);
+void mostrarTestesUtilizador(tipoTeste *vetorTestes,int *totTestes, tipoMembro vetorMembros[], int totMembros);
 int contaPositivos(tipoTeste *vetorTestes, int totTestes, int utente);
 
 void listarConfinamento(tipoMembro vetorMembros[],int totMembros);
@@ -107,9 +108,13 @@ int main()
                 mostrarDadosMembros(vetorMembros, totMembros);
             break;
         case '2':
-                mostrarDadosTestes(vetorTestes, &totTestes, vetorMembros, totMembros);;
+                mostrarDadosTestes(vetorTestes, &totTestes, vetorMembros, totMembros);
             break;
+                break;
         case '3':
+                mostrarTestesUtilizador(vetorTestes, &totTestes, vetorMembros, totMembros);
+            break;
+        case '4':
                 listarConfinamento(vetorMembros,totMembros);
             break;
         case 'A':
@@ -141,8 +146,9 @@ char menu (int totalM, int totTestesAg, int totTestesRea, int totalMemVac)
     printf("\n A - Agendar Novo Teste");
     printf("\n R - Inserir Teste Realizado");
     printf("\n 1 - Mostrar Dados Membros");
-    printf("\n 2 - Mostrar Dados Testes");
-    printf("\n 3 - Mostrar Dados Confinamentos");
+    printf("\n 2 - Mostrar Dados de Todos os Testes");
+    printf("\n 3 - Mostrar Dados dos Testes de um Membro");
+    printf("\n 4 - Mostrar Dados Confinamentos");
 
     printf("\n\n T - Terminar Programa");
     printf("\n\n \t\t Opcao (I,V,C,M,A ou T(erminar) ) --> ");
@@ -663,11 +669,13 @@ void mostrarDadosTestes(tipoTeste *vetorTestes,int *totTestes, tipoMembro vetorM
     }
     else
     {
+        printf("\n-----------Registos Testes-----------\n");
+        printf("\nNumero Utente \t Nome \t Tipo de Membro \t Tipo Teste Realizado \t Data de Realizacao \t Resultado \t Hora da Colheita \t Duracao");
         for (i=0; i< *totTestes; i++)
         {
                 if(vetorTestes[i].resultado == '\0'){ //        verificar se 'e teste agendado analisando se o resultado se encontra vazio
-                        printf("-----------Registos Testes Agendados-----------");
-                        printf("\nNumero Utente \t Nome \t Tipo de Membro \t Tipo Teste Agendado \t Data de Agendamento ");
+                        //printf("**Teste Agendado**");
+                        //printf("\nNumero Utente \t Nome \t Tipo de Membro \t Tipo Teste Agendado \t Data de Agendamento ");
 
                         printf("\n %d \t",vetorMembros[i].numUtente);
 
@@ -701,13 +709,29 @@ void mostrarDadosTestes(tipoTeste *vetorTestes,int *totTestes, tipoMembro vetorM
                                     printf("\t\t Antigenio");
                                 }
 
-                            printf("\t\t\t %02d/%02d/%4d\n", vetorTestes[i].dataRealizacao.dia, vetorTestes[i].dataRealizacao.mes, vetorTestes[i].dataRealizacao.ano );
+                            printf("\t\t\t %02d/%02d/%4d", vetorTestes[i].dataRealizacao.dia, vetorTestes[i].dataRealizacao.mes, vetorTestes[i].dataRealizacao.ano );
+
+                            if(vetorTestes[i].resultado == 'P')
+                                            {
+                                                printf("\t\t Positivo");
+                                            }else if (vetorTestes[i].resultado == 'N')
+                                            {
+                                                printf("\t\t Negativo");
+                                            }else if (vetorTestes[i].resultado == 'I')
+                                            {
+                                                printf("\t\t Inconclusivo");
+                                            }else{
+                                                printf("\t\t [Sem Registo]");
+                                            }
+
+                                            printf("\t [Sem Registo] \t");
+                                            printf("\t [Sem Registo]\n");
                 }
                 
-                else if(vetorTestes[i].resultado != '\0'){
+                else if(vetorTestes[i].resultado != '\0'){ //verificar se e realizado
 
-                            printf("-----------Registos Testes Realizados-----------");
-                            printf("\nNumero Utente \t Nome \t Tipo de Membro \t Tipo Teste Realizado \t Data de Realizacao \t Resultado \t Hora da Colheita \t Duracao");
+                            //printf("**Teste Realizado**");
+                            //printf("\nNumero Utente \t Nome \t Tipo de Membro \t Tipo Teste Realizado \t Data de Realizacao \t Resultado \t Hora da Colheita \t Duracao");
 
                             printf("\n %d \t",vetorTestes[i].numUtente);
 
@@ -718,15 +742,15 @@ void mostrarDadosTestes(tipoTeste *vetorTestes,int *totTestes, tipoMembro vetorM
 
                                         if (vetorMembros[k].estadoMembro == 'E')
                                             {
-                                                printf("\t Estudante");
+                                                printf("\t\t Estudante");
                                             }
                                             else if (vetorMembros[k].estadoMembro == 'D')
                                             {
-                                            printf("\t Docente");
+                                            printf("\t\t Docente");
                                             }
                                             else if (vetorMembros[k].estadoMembro == 'T')
                                             {
-                                            printf("\t Tecnico");
+                                            printf("\t\t Tecnico");
                                             }
                                     }
                                     
@@ -741,24 +765,173 @@ void mostrarDadosTestes(tipoTeste *vetorTestes,int *totTestes, tipoMembro vetorM
                                         printf("\t\t Antigenio");
                                     }
 
-                                printf("\t\t\t %02d/%02d/%4d \t", vetorTestes[i].dataRealizacao.dia, vetorTestes[i].dataRealizacao.mes, vetorTestes[i].dataRealizacao.ano );
+                                printf("\t\t\t %02d/%02d/%4d", vetorTestes[i].dataRealizacao.dia, vetorTestes[i].dataRealizacao.mes, vetorTestes[i].dataRealizacao.ano);
 
                                 
                                 if(vetorTestes[i].resultado == 'P')
                                 {
-                                    printf("\t Positivo");
+                                    printf("\t\t Positivo");
                                 }else if (vetorTestes[i].resultado == 'N')
                                 {
-                                    printf("\t Negativo");
+                                    printf("\t\t Negativo");
                                 }else if (vetorTestes[i].resultado == 'I')
                                 {
-                                    printf("\t Inconclusivo");
+                                    printf("\t\t Inconclusivo");
                                 }
 
                                 printf("\t %02d:%02d \t",  vetorTestes[i].horaColheita.hora, vetorTestes[i].horaColheita.min );
                                 printf("\t %02d minutos\n",  vetorTestes[i].tempDuracao);
                     }
             }
+        }
+}
+
+void mostrarTestesUtilizador(tipoTeste *vetorTestes,int *totTestes, tipoMembro vetorMembros[], int totMembros)
+{
+    int i, k, j, numUtente, posicao, quantPositivos;
+    int total;
+
+    printf("\n Numero de Utente: ");
+    numUtente = lerInteiro(1,9999999);
+    posicao = procuraMembro(vetorMembros, totMembros, numUtente);
+    
+    if (posicao == -1){
+        printf("Esse numero de utente nao existe.\n");
+    }else if (totMembros == 0)
+    {
+        printf("\n Nao existem membros inscritos!");
+    }else if(*totTestes == 0){
+        printf("\n Nao existem testes agendados ou realizados!");
+    }
+    else
+    {
+        printf("\n-----------Registos dos Testes do Membro Inserido-----------\n");
+        printf("\nNumero Utente \t Nome \t Tipo de Membro \t Tipo Teste Realizado \t Data de Realizacao \t Resultado \t Hora da Colheita \t Duracao");
+                    for (i=0; i< *totTestes; i++)
+                    {
+                            if(vetorTestes[i].resultado == '\0' && vetorTestes[i].numUtente == numUtente){ //        verificar se 'e teste agendado analisando se o resultado se encontra vazio && se o numUtente inserido existe no vetorTestes
+                                    //printf("\n**Teste Agendado**");
+
+                                    printf("\n %d \t",vetorMembros[i].numUtente);
+
+                                    for (k=0; k< *totTestes; k++){     
+                                            if (vetorTestes[i].numUtente == vetorMembros[k].numUtente)  // para interligar os vetores
+                                            {
+                                                printf("\t %s", vetorMembros[k].nome);
+
+                                                if (vetorMembros[k].estadoMembro == 'E')
+                                                    {
+                                                        printf("\t Estudante");
+                                                    }
+                                                    else if (vetorMembros[k].estadoMembro == 'D')
+                                                    {
+                                                    printf("\t Docente");
+                                                    }
+                                                    else if (vetorMembros[k].estadoMembro == 'T')
+                                                    {
+                                                    printf("\t Tecnico");
+                                                    }
+                                            }
+                                            
+                                    }
+
+                                        if (vetorTestes[i].tipoTeste == 1)
+                                            {
+                                                printf("\t\t PCR");
+                                            }
+                                        else if (vetorTestes[i].tipoTeste == 2)
+                                            {
+                                                printf("\t\t Antigenio");
+                                            }
+
+                                        printf("\t\t\t %02d/%02d/%4d", vetorTestes[i].dataRealizacao.dia, vetorTestes[i].dataRealizacao.mes, vetorTestes[i].dataRealizacao.ano );
+
+                                        if(vetorTestes[i].resultado == 'P')
+                                            {
+                                                printf("\t\t Positivo");
+                                            }else if (vetorTestes[i].resultado == 'N')
+                                            {
+                                                printf("\t\t Negativo");
+                                            }else if (vetorTestes[i].resultado == 'I')
+                                            {
+                                                printf("\t\t Inconclusivo");
+                                            }else{
+                                                printf("\t\t [Sem Registo]");
+                                            }
+
+                                            printf("\t [Sem Registo] \t");
+                                            printf("\t [Sem Registo]\n");
+                            }
+                            
+                            else if(vetorTestes[i].resultado != '\0' && vetorTestes[i].numUtente == numUtente){ //        verificar se 'e teste realizado analisando se o resultado 'e diferente de vazio && se o numUtente inserido existe no vetorTestes
+
+                                       // printf("\n**Teste Realizado**");
+
+                                        printf("\n %d \t",vetorTestes[i].numUtente);
+
+                                        for (k=0; k< *totTestes; k++){     
+                                                if (vetorTestes[i].numUtente == vetorMembros[k].numUtente)  // para interligar os vetores
+                                                {
+                                                    printf("\t %s", vetorMembros[k].nome);
+
+                                                    if (vetorMembros[k].estadoMembro == 'E')
+                                                        {
+                                                            printf("\t\t Estudante");
+                                                        }
+                                                        else if (vetorMembros[k].estadoMembro == 'D')
+                                                        {
+                                                        printf("\t\t Docente");
+                                                        }
+                                                        else if (vetorMembros[k].estadoMembro == 'T')
+                                                        {
+                                                        printf("\t\t Tecnico");
+                                                        }
+                                                }
+                                                
+                                        }
+
+                                            if (vetorTestes[i].tipoTeste == 1)
+                                                {
+                                                    printf("\t\t PCR");
+                                                }
+                                            else if (vetorTestes[i].tipoTeste == 2)
+                                                {
+                                                    printf("\t\t Antigenio");
+                                                }
+
+                                            printf("\t\t\t %02d/%02d/%4d", vetorTestes[i].dataRealizacao.dia, vetorTestes[i].dataRealizacao.mes, vetorTestes[i].dataRealizacao.ano );
+
+                                            
+                                            if(vetorTestes[i].resultado == 'P')
+                                            {
+                                                printf("\t\t Positivo");
+                                            }else if (vetorTestes[i].resultado == 'N')
+                                            {
+                                                printf("\t\t Negativo");
+                                            }else if (vetorTestes[i].resultado == 'I')
+                                            {
+                                                printf("\t\t Inconclusivo");
+                                            }
+
+                                            printf("\t %02d:%02d \t",  vetorTestes[i].horaColheita.hora, vetorTestes[i].horaColheita.min );
+                                            printf("\t %02d minutos\n",  vetorTestes[i].tempDuracao);
+                                }else{
+                                    printf("\n Nao existem testes agendados ou realizados por esse membro!");
+                                }
+                     }
+                     for (j=0; j < total; j++)
+                    {
+                        numUtente = vetorTestes[j].numUtente;
+                        quantPositivos = contaPositivos(vetorTestes, totTestes, numUtente);
+                        if (quantPositivos != 0)
+                        {
+                            total = j;
+                            printf("%d", quantPositivos);
+                        }else{
+                            printf("O Membro nao teve testes positivos");
+                        }
+                        
+                    }
         }
 }
 
