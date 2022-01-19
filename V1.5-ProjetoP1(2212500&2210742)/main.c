@@ -64,11 +64,8 @@ int contaPositivos(tipoTeste *vetorTestes, int totTestes, int utente);
 
 void listarConfinamento(tipoMembro vetorMembros[],int totMembros);
 
-
-
-void gravaFicheiroBinario(tipoMembro vetorMembros[MAX_MEMBROS],int totMembros,tipoTeste *vetorTestes,int totTestes);
-int leFicheiroBinario(tipoMembro vetorMembros[MAX_MEMBROS]);
-
+void *leFicheiroBinario_Todos(tipoMembro vetorMembros[],int *totMembros, tipoTeste vetorTestes[], int *totTestes,int *totTestesAgendados, int *totTestesRealizados,int *totMembrosVacinados);
+void gravaFicheiroBinario_Todos(tipoMembro vetorMembros[], int totMembros, tipoTeste vetorTestes[], int totTestes,int totTestesAgendados,int totTestesRealizados,int totMembrosVacinados);
 
 void limpaBufferStdin(void);
 int lerInteiro(int min, int max);
@@ -130,11 +127,11 @@ int main()
                 vetorTestes = inserirTesteRealizado(vetorTestes, &totTestes, &totTestesRealizados, &totTestesAgendados, vetorMembros, totMembros);
             break;
         case 'G':
-                 gravaFicheiroBinario(vetorMembros,totMembros,vetorTestes,totTestes);
+                gravaFicheiroBinario_Todos(vetorMembros,totMembros,vetorTestes,totTestes,totTestesAgendados,totTestesRealizados,totMembrosVacinados);
            // gravaFicheiroTexto(vetorEstudantes, totEstudantes);
             break;
-        case 'R':
-                totMembros = leFicheiroBinario(vetorMembros,vetorTestes,&totTestes);
+        case 'U':
+                vetorTestes = leFicheiroBinario_Todos(vetorMembros,&totMembros,vetorTestes,&totTestes,&totTestesAgendados,&totTestesRealizados,&totMembrosVacinados);
            // totEstudantes=leFicheiroBinario(vetorEstudantes);leFicheiroBinario(tipoMembro vetorMembros[MAX_MEMBROS],tipoTeste*vetorTestes,*totTestes)
             break;
       
@@ -1153,78 +1150,60 @@ return horatype;
 
 
 
+void gravaFicheiroBinario_Todos(tipoMembro vetorMembros[], int totMembros, tipoTeste vetorTestes[], int totTestes,int totTestesAgendados,int totTestesRealizados,int totMembrosVacinados)
+{
+    FILE *ficheiro;
 
-void gravaFicheiroBinario(tipoMembro vetorMembros[MAX_MEMBROS],int totMembros,tipoTeste *vetorTestes,int totTestes){
-	FILE *ficheiro,*ficheiro1;
-	int quantEscritaParaFicheiro;
-	ficheiro=fopen("dadosMembros.dat","wb");
-	if (ficheiro == NULL) {
-		printf("Erro abrir ficheiro");
-	}else{
-		quantEscritaParaFicheiro = fwrite(&totMembros,sizeof(int),1,ficheiro);
-        if (quantEscritaParaFicheiro != 1) {
-            printf("Erro ao escrever a quantidade de estudantes");
-        }
-		quantEscritaParaFicheiro = fwrite(vetorMembros,sizeof(tipoMembro),totMembros,ficheiro);
-        if (quantEscritaParaFicheiro != totMembros) {
-            printf("Erro ao escrever dados de estudntes");
-        }
+    ficheiro = fopen("dados.dat", "wb");
+    if (ficheiro == NULL)
+    {
+        printf ("Erro ao abrir ficheiro");
+    }
+    else
+    {   fwrite(&totTestesAgendados, sizeof(int), 1, ficheiro);
+        fwrite(&totTestesRealizados, sizeof(int), 1, ficheiro);
+        fwrite(&totMembrosVacinados, sizeof(int), 1, ficheiro);
+        fwrite(&totMembros, sizeof(int), 1, ficheiro);
+        fwrite(vetorMembros,sizeof(tipoMembro),totMembros, ficheiro);
+        fwrite(&totTestes, sizeof(int), 1, ficheiro); 	// escreve reservas
+        fwrite(vetorTestes, sizeof(tipoTeste), totTestes, ficheiro);
         fclose(ficheiro);
-
-// FICHEIRO TESTES 1
-    ficheiro1=fopen("dadosTestes.dat","wb");
-    if (ficheiro == NULL) {
-		printf("Erro abrir ficheiro");
-	}else{
-
-        quantEscritaParaFicheiro = fwrite(&totTestes,sizeof(int),1,ficheiro1);
-        if (quantEscritaParaFicheiro != totTestes) {
-            printf("Erro ao escrever dados de estudntes");
-        }
-        quantEscritaParaFicheiro = fwrite(vetorTestes,sizeof(tipoTeste),totTestes,ficheiro1);
-        if (quantEscritaParaFicheiro != totTestes) {
-            printf("Erro ao escrever dados de estudntes");
-        }
-		fclose(ficheiro1);
     }
 }
 
-int leFicheiroBinario(tipoMembro vetorMembros[MAX_MEMBROS],tipoTeste*vetorTestes,*totTestes){
-    FILE *ficheiro,ficheiro1;
-    int numElementos,numElementos1;
-    int quantLeituraDeFicheiro;
-    ficheiro=fopen("dadosMembros.dat","rb");
-    if (ficheiro == NULL) {
-        printf ("Erro abrir ficheiro");
-    }else{
-        quantLeituraDeFicheiro = fread(&numElementos,sizeof(int),1,ficheiro);
-        if (quantLeituraDeFicheiro != 1) {
-            printf("Erro ao obter informacao da quantidade de estudantes");
+void *leFicheiroBinario_Todos(tipoMembro vetorMembros[],int *totMembros, tipoTeste *vetorTestes, int *totTestes,int *totTestesAgendados, int *totTestesRealizados,int *totMembrosVacinados)
+{
+    FILE *ficheiro;
+
+    ficheiro = fopen("dados.dat", "rb");
+    if (ficheiro == NULL)
+    {
+        printf ("Erro ao abrir ficheiro");
+        *totTestes = 0;
+    }
+    else
+    {   
+        fread(&(*totTestesAgendados), sizeof(int), 1, ficheiro);
+        fread(&(*totTestesRealizados), sizeof(int), 1, ficheiro);
+        fread(&(*totMembrosVacinados), sizeof(int), 1, ficheiro);
+
+        fread(&(*totMembros), sizeof(int), 1, ficheiro);
+        fread(vetorMembros,sizeof(tipoMembro),*totMembros, ficheiro);
+        fread(&(*totTestes),sizeof(int),1,ficheiro);
+
+        vetorTestes= realloc(vetorTestes,(*totTestes)*sizeof(tipoTeste));
+        if (vetorTestes==NULL && *totTestes!=0)
+        {
+            printf ("Erro - Impossivel criar vetor dinamico");
+            *totTestes = 0;
+            *totMembros=0;
         }
-        quantLeituraDeFicheiro = fread(vetorMembros,sizeof(tipoMembro),numElementos,ficheiro);
-        if (quantLeituraDeFicheiro != numElementos) {
-            printf("Erro ao obter informacao dos estudantes");
+        else  		 /* Obtem dados da reserva e armazena no vetor */
+        {   
+            fread(vetorTestes, sizeof(tipoTeste), *totTestes, ficheiro);
         }
         fclose(ficheiro);
-
-//Ficheiro Testes
-
-    ficheiro1=fopen("dadosTestes.dat","rb");
-    if (ficheiro == NULL) {
-        printf ("Erro abrir ficheiro");
-    }else{
-        quantLeituraDeFicheiro = fread(&numElementos1,sizeof(int),1,ficheiro1);
-        if (quantLeituraDeFicheiro != 1) {
-            printf("Erro ao obter informacao da quantidade de estudantes");
-        }
-        quantLeituraDeFicheiro = fread(vetorTestes,sizeof(tipoTeste),numElementos1,ficheiro1);
-        if (quantLeituraDeFicheiro != numElementos1) {
-            printf("Erro ao obter informacao dos estudantes");
-        }
-
-        *totTestes= numElementos1
-        fclose(ficheiro1);
     }
-    return numElementos;
+    return vetorTestes;
 }
 
