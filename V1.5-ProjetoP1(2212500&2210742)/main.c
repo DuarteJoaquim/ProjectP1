@@ -67,6 +67,7 @@ void listarConfinamento(tipoMembro vetorMembros[],int totMembros);
 
 void *leFicheiroBinario_Todos(tipoMembro vetorMembros[],int *totMembros, tipoTeste vetorTestes[], int *totTestes,int *totTestesAgendados, int *totTestesRealizados,int *totMembrosVacinados);
 void gravaFicheiroBinario_Todos(tipoMembro vetorMembros[], int totMembros, tipoTeste vetorTestes[], int totTestes,int totTestesAgendados,int totTestesRealizados,int totMembrosVacinados);
+void LogTestesInfo(tipoMembro dadosMembro, tipoTeste dadosTeste);
 
 void limpaBufferStdin(void);
 int lerInteiro(int min, int max);
@@ -128,14 +129,10 @@ int main()
             break;
         case 'G':
                 gravaFicheiroBinario_Todos(vetorMembros,totMembros,vetorTestes,totTestes,totTestesAgendados,totTestesRealizados,totMembrosVacinados);
-           // gravaFicheiroTexto(vetorEstudantes, totEstudantes);
             break;
         case 'L':
                 vetorTestes = leFicheiroBinario_Todos(vetorMembros,&totMembros,vetorTestes,&totTestes,&totTestesAgendados,&totTestesRealizados,&totMembrosVacinados);
-           // totEstudantes=leFicheiroBinario(vetorEstudantes);leFicheiroBinario(tipoMembro vetorMembros[MAX_MEMBROS],tipoTeste*vetorTestes,*totTestes)
             break;
-      
-
         }
     }while(opcao != 'T');
 
@@ -461,6 +458,7 @@ int contaTestesPCR(tipoTeste vetorTestes[],int totTestes, int totMembros, int da
 tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[],int *totTestes, int *totTestesAgendados, int totMembros){
 
     tipoTeste dadosTeste;
+    tipoMembro dadosMembro;
     tipoTeste *paux; /* ponteiro para restaurar valor de vFunc  */
     int dataDia, dataMes, dataAno;
     int posicao, totalPCR, numUtente;
@@ -475,7 +473,7 @@ tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[],int *t
 
            printf("Esse numero de utente nao existe.\n");
 
-        }else{
+        }else{ 
                  printf("%d TESTES ANTES DO REALLOC NO agendarTeste \t", *totTestes); //TESTE//TESTE//TESTE//TESTE//TESTE
 
                 vetorTestes = realloc(vetorTestes,(*totTestes+1)*sizeof(tipoTeste));
@@ -507,7 +505,7 @@ tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[],int *t
                         dataAno = dadosTeste.dataRealizacao.ano;
                         int totT = *totTestes;
                         totalPCR = contaTestesPCR(vetorTestes, totT, totMembros, dataDia, dataMes, dataAno); // conta testes pcr do msm dia
-                        printf("%d PCR's na Data Inserida", totalPCR);
+                        printf("%d PCR's na Data Inserida", totalPCR); // TESTE TESTE TESTE TESTE TESTE TESTE TESTE TESTE TESTE 
                     }else if(totalPCR >= 15){
 
                         printf ("Nao e possivel fazer mais testes neste dia");
@@ -519,6 +517,7 @@ tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[],int *t
                         dadosTeste.dataRealizacao.ano = -1;
                          }
                 }
+                            //printf("%d numero de utente <- TESTE\n", dadosTeste.numUtente);  // TESTE TESTE TESTE TESTE TESTE TESTE TESTE TESTE TESTE 
                             vetorTestes[*totTestes].tipoTeste = dadosTeste.tipoTeste; // para os dados irem para o ultimo espaco do vetor
                             vetorTestes[*totTestes].numUtente = dadosTeste.numUtente; 
                             vetorTestes[*totTestes].dataRealizacao.dia = dadosTeste.dataRealizacao.dia;
@@ -528,9 +527,10 @@ tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[],int *t
                             vetorTestes[*totTestes].horaColheita.hora = -1; 
                             vetorTestes[*totTestes].horaColheita.min = -1; 
                             vetorTestes[*totTestes].tempDuracao = -1;
-
+                            //printf("%d numero de utente <- TESTE\n", dadosTeste.numUtente);  // TESTE TESTE TESTE TESTE TESTE TESTE TESTE TESTE TESTE 
                             (*totTestesAgendados)++;
                             (*totTestes)++;
+                            LogTestesInfo(vetorMembros[posicao], dadosTeste);
                             printf("\nAgendado com sucesso");
                         
                     }
@@ -615,6 +615,7 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
                                                 // printf(" \n %d numUtente do ultimo membro inserido",vetorTestes[*totTestes].numUtente);  // #TESTE# // #TESTE# // #TESTE# // #TESTE# // #TESTE#
 
                                                 (*totTestes)++;
+                                                LogTestesInfo(vetorMembros[posicao], dadosTeste);
                                                 printf(" \n %d totTestes", *totTestes);
                                                 printf("\nTeste Realizado com sucesso");
                                 }
@@ -731,6 +732,7 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
                                        // printf(" \n %d numUtente do ultimo membro inserido",vetorTestes[*totTestes].numUtente);  // #TESTE# // #TESTE# // #TESTE# // #TESTE# // #TESTE#
 
                                         (*totTestes)++;
+                                        LogTestesInfo(vetorMembros[posicao], dadosTeste);
                                         printf(" \n %d totTestes", *totTestes);
                                         printf("\nTeste Realizado com sucesso");
 
@@ -761,9 +763,9 @@ void mostrarDadosTestes(tipoTeste *vetorTestes,int *totTestes, tipoMembro vetorM
                         //printf("**Teste Agendado**");
                         //printf("\nNumero Utente \t Nome \t Tipo de Membro \t Tipo Teste Agendado \t Data de Agendamento ");
 
-                        printf("\n %d \t",vetorMembros[i].numUtente);
+                        printf("\n %d \t", vetorTestes[i].numUtente);
 
-                        for (k=0; k< *totTestes; k++){     
+                        for (k=0; k< totMembros; k++){     
                                 if (vetorTestes[i].numUtente == vetorMembros[k].numUtente)  // para interligar os vetores
                                 {
                                     printf("\t %s", vetorMembros[k].nome);
@@ -819,7 +821,7 @@ void mostrarDadosTestes(tipoTeste *vetorTestes,int *totTestes, tipoMembro vetorM
 
                             printf("\n %d \t",vetorTestes[i].numUtente);
 
-                            for (k=0; k< *totTestes; k++){     
+                            for (k=0; k< totMembros; k++){     
                                     if (vetorTestes[i].numUtente == vetorMembros[k].numUtente)  // para interligar os vetores
                                     {
                                         printf("\t %s", vetorMembros[k].nome);
@@ -1032,35 +1034,6 @@ int contaPositivos(tipoTeste *vetorTestes, int totTestes, int utente){
 }
 
 
-/*!!!!!!!!!!!!FUNCOES EM MANUTENCAO!!!!!!!!!!!!!!!!
-
-void fEstatistica(tipoMembro vetorMembros[],int totMembros){
-
-int i,numEstudantes,numTecnicos,numDocentes;
-
-for(i=0;i<totMembros;i++){
-
-        if(vetorMembros[i].estadoMembro =='E'){                 // conta o numero de cada tipo de membro existente nas variaveis num numEstudantes,numTecnicos,numDocentes para depois dar printf
-
-            numEstudantes++;
-        }
-
-        if(vetorMembros[i].estadoMembro =='T'){
-
-            numTecnicos++;
-        }
-
-        if(vetorMembros[i].estadoMembro =='D'){
-
-            numDocentes++;
-        }
-
-    }
-}
-
-*/
-
-
 /* Funcoes para leitura de dados */
 
 void lerString(char vetor[80], int max){
@@ -1218,3 +1191,90 @@ void *leFicheiroBinario_Todos(tipoMembro vetorMembros[],int *totMembros, tipoTes
     return vetorTestes;
 }
 
+void LogTestesInfo(tipoMembro dadosMembro, tipoTeste dadosTeste)
+{
+    FILE *ficheiro;
+    ficheiro = fopen("TestesInfo.txt", "a");
+    if (ficheiro == NULL)
+    {
+        printf ("Erro ao abrir ficheiro");
+    }
+    else
+    {
+        fprintf(ficheiro, "\nNumero Utente \t Nome \t Tipo de Membro \t Tipo Teste Realizado \t Data de Realizacao \t Resultado \t Hora da Colheita \t Duracao");
+                        fprintf(ficheiro, "\n %d \t",dadosTeste.numUtente);
+
+                                    fprintf(ficheiro, "\t %s", dadosMembro.nome);
+
+                                    if (dadosMembro.estadoMembro == 'E')
+                                        {
+                                            fprintf(ficheiro, "\t Estudante");
+                                        }
+                                        else if (dadosMembro.estadoMembro == 'D')
+                                        {
+                                        fprintf(ficheiro, "\t Docente");
+                                        }
+                                        else if (dadosMembro.estadoMembro == 'T')
+                                        {
+                                        fprintf(ficheiro, "\t Tecnico");
+                                        }
+
+
+                            if (dadosTeste.tipoTeste == 1)
+                                {
+                                    fprintf(ficheiro, "\t\t PCR");
+                                }
+                            else if (dadosTeste.tipoTeste == 2)
+                                {
+                                    fprintf(ficheiro, "\t\t Antigenio");
+                                }
+
+                            fprintf(ficheiro, "\t\t\t %02d/%02d/%4d", dadosTeste.dataRealizacao.dia, dadosTeste.dataRealizacao.mes, dadosTeste.dataRealizacao.ano );
+
+                            if(dadosTeste.resultado == 'P')
+                                            {
+                                                fprintf(ficheiro, "\t\t Positivo");
+                                            }else if (dadosTeste.resultado == 'N')
+                                            {
+                                                fprintf(ficheiro, "\t\t Negativo");
+                                            }else if (dadosTeste.resultado == 'I')
+                                            {
+                                                fprintf(ficheiro, "\t\t Inconclusivo");
+                                            }else{
+                                                fprintf(ficheiro, "\t\t [Sem Registo]");
+                                            }
+                                        if(dadosTeste.tempDuracao == -1){
+                                            fprintf(ficheiro, "\t %02d:%02d \t",  dadosTeste.horaColheita.hora, dadosTeste.horaColheita.min );
+                                            fprintf(ficheiro, "\t %02d minutos\n",  dadosTeste.tempDuracao);
+                                        }else
+                                            fprintf(ficheiro, "\t [Sem Registo] \t");
+                                            fprintf(ficheiro, "\t [Sem Registo]\n");
+                                        }
+
+                                        if(dadosMembro.estadoVacinacao == 0 && dadosMembro.estadoVacinacao == 1 && dadosMembro.estadoVacinacao == 2 && dadosMembro.estadoVacinacao == 3){
+                                            fprintf(ficheiro,"\t\n %d  Estado confinamento \n", dadosMembro.estadoVacinacao);
+                                        }else{
+                                            printf("\n");
+                                        }
+
+                                        if (dadosMembro.estadoVacinacao == 0)
+                                            {
+                                            fprintf(ficheiro,"\t\n %d  Estado confinamento: Sem Vacina\n");
+                                            }
+                                            else if (dadosMembro.estadoVacinacao == 1)
+                                            {
+                                            fprintf(ficheiro,"\t\n %d  Estado confinamento: Dose 1\n");
+                                            }
+                                            else if (dadosMembro.estadoVacinacao == 2)
+                                            {
+                                            fprintf(ficheiro,"\t\n %d  Estado confinamento: Dose 2\n");
+                                            }
+                                            else if (dadosMembro.estadoVacinacao == 3)
+                                            {
+                                            fprintf(ficheiro,"\t\n %d  Estado confinamento: Dose 3\n");
+                                            }else{
+                                                fprintf(ficheiro,"\n");
+                                            }
+
+                     fclose(ficheiro);
+            }
