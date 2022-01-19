@@ -65,6 +65,9 @@ int contaPositivos(tipoTeste *vetorTestes, int totTestes, int utente);
 
 void listarConfinamento(tipoMembro vetorMembros[],int totMembros);
 
+void *leFicheiroBinario_Todos(tipoMembro vetorMembros[],int *totMembros, tipoTeste vetorTestes[], int *totTestes,int *totTestesAgendados, int *totTestesRealizados,int *totMembrosVacinados);
+void gravaFicheiroBinario_Todos(tipoMembro vetorMembros[], int totMembros, tipoTeste vetorTestes[], int totTestes,int totTestesAgendados,int totTestesRealizados,int totMembrosVacinados);
+
 void limpaBufferStdin(void);
 int lerInteiro(int min, int max);
 void lerString(char vetor[], int max);
@@ -124,6 +127,15 @@ int main()
         case 'R':
                 vetorTestes = inserirTesteRealizado(vetorTestes, &totTestes, &totTestesRealizados, &totTestesAgendados, vetorMembros, totMembros);
             break;
+        case 'G':
+                gravaFicheiroBinario_Todos(vetorMembros,totMembros,vetorTestes,totTestes,totTestesAgendados,totTestesRealizados,totMembrosVacinados);
+           // gravaFicheiroTexto(vetorEstudantes, totEstudantes);
+            break;
+        case 'U':
+                vetorTestes = leFicheiroBinario_Todos(vetorMembros,&totMembros,vetorTestes,&totTestes,&totTestesAgendados,&totTestesRealizados,&totMembrosVacinados);
+           // totEstudantes=leFicheiroBinario(vetorEstudantes);leFicheiroBinario(tipoMembro vetorMembros[MAX_MEMBROS],tipoTeste*vetorTestes,*totTestes)
+            break;
+      
 
         }
     }while(opcao != 'T');
@@ -1165,3 +1177,64 @@ tipoHora lerHora(void){
     horatype.min = lerInteiro(0,59);   
 return horatype;
 }
+//FICHEIROS          
+
+
+
+void gravaFicheiroBinario_Todos(tipoMembro vetorMembros[], int totMembros, tipoTeste vetorTestes[], int totTestes,int totTestesAgendados,int totTestesRealizados,int totMembrosVacinados)
+{
+    FILE *ficheiro;
+
+    ficheiro = fopen("dados.dat", "wb");
+    if (ficheiro == NULL)
+    {
+        printf ("Erro ao abrir ficheiro");
+    }
+    else
+    {   fwrite(&totTestesAgendados, sizeof(int), 1, ficheiro);
+        fwrite(&totTestesRealizados, sizeof(int), 1, ficheiro);
+        fwrite(&totMembrosVacinados, sizeof(int), 1, ficheiro);
+        fwrite(&totMembros, sizeof(int), 1, ficheiro);
+        fwrite(vetorMembros,sizeof(tipoMembro),totMembros, ficheiro);
+        fwrite(&totTestes, sizeof(int), 1, ficheiro); 	// escreve reservas
+        fwrite(vetorTestes, sizeof(tipoTeste), totTestes, ficheiro);
+        fclose(ficheiro);
+    }
+}
+
+void *leFicheiroBinario_Todos(tipoMembro vetorMembros[],int *totMembros, tipoTeste *vetorTestes, int *totTestes,int *totTestesAgendados, int *totTestesRealizados,int *totMembrosVacinados)
+{
+    FILE *ficheiro;
+
+    ficheiro = fopen("dados.dat", "rb");
+    if (ficheiro == NULL)
+    {
+        printf ("Erro ao abrir ficheiro");
+        *totTestes = 0;
+    }
+    else
+    {   
+        fread(&(*totTestesAgendados), sizeof(int), 1, ficheiro);
+        fread(&(*totTestesRealizados), sizeof(int), 1, ficheiro);
+        fread(&(*totMembrosVacinados), sizeof(int), 1, ficheiro);
+
+        fread(&(*totMembros), sizeof(int), 1, ficheiro);
+        fread(vetorMembros,sizeof(tipoMembro),*totMembros, ficheiro);
+        fread(&(*totTestes),sizeof(int),1,ficheiro);
+
+        vetorTestes= realloc(vetorTestes,(*totTestes)*sizeof(tipoTeste));
+        if (vetorTestes==NULL && *totTestes!=0)
+        {
+            printf ("Erro - Impossivel criar vetor dinamico");
+            *totTestes = 0;
+            *totMembros=0;
+        }
+        else  		 /* Obtem dados da reserva e armazena no vetor */
+        {   
+            fread(vetorTestes, sizeof(tipoTeste), *totTestes, ficheiro);
+        }
+        fclose(ficheiro);
+    }
+    return vetorTestes;
+}
+
