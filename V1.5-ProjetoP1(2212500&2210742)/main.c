@@ -68,6 +68,7 @@ void listarConfinamento(tipoMembro vetorMembros[],int totMembros);
 void *leFicheiroBinario_Todos(tipoMembro vetorMembros[],int *totMembros, tipoTeste vetorTestes[], int *totTestes,int *totTestesAgendados, int *totTestesRealizados,int *totMembrosVacinados);
 void gravaFicheiroBinario_Todos(tipoMembro vetorMembros[], int totMembros, tipoTeste vetorTestes[], int totTestes,int totTestesAgendados,int totTestesRealizados,int totMembrosVacinados);
 void LogTestesInfo(tipoMembro dadosMembro, tipoTeste dadosTeste);
+void fEstatistica(tipoMembro vetorMembros[],int totMembros,int totTestes,tipoTeste *vetorTestes, int totTestesRealizados);
 
 void limpaBufferStdin(void);
 int lerInteiro(int min, int max);
@@ -133,6 +134,10 @@ int main()
         case 'L':
                 vetorTestes = leFicheiroBinario_Todos(vetorMembros,&totMembros,vetorTestes,&totTestes,&totTestesAgendados,&totTestesRealizados,&totMembrosVacinados);
             break;
+        case 'E':
+                fEstatistica(vetorMembros,totMembros,totTestes,vetorTestes,totTestesRealizados);
+            break;
+                
         }
     }while(opcao != 'T');
 
@@ -154,6 +159,7 @@ char menu (int totalM, int totTestesAg, int totTestesRea, int totalMemVac)
     printf("\n C - Atualizar Estado de Confinamento");
     printf("\n A - Agendar Novo Teste");
     printf("\n R - Inserir Teste Realizado");
+    printf("\n E - Estatistica");
     printf("\n 1 - Mostrar Dados Membros");
     printf("\n 2 - Mostrar Dados de Todos os Testes");
     printf("\n 3 - Mostrar Dados dos Testes de um Membro");
@@ -1303,3 +1309,193 @@ void LogTestesInfo(tipoMembro dadosMembro, tipoTeste dadosTeste)
 
                      fclose(ficheiro);
             }
+
+
+void fEstatistica(tipoMembro vetorMembros[],int totMembros,int totTestes,tipoTeste *vetorTestes, int totTestesRealizados)
+{
+
+    int i,numEstudantes,numTecnicos,numDocentes,menor,a;
+    float mediaTestesTempo,testesInconclusivos;
+    tipoData menorTeste;
+    mediaTestesTempo = 0, numDocentes = 0, numEstudantes = 0, numTecnicos = 0;
+    testesInconclusivos= 0;
+    menor = vetorMembros[0].totRealizadosIndiv;
+
+    printf("Estatistica\n");
+
+
+    for(i=0;i<totMembros;i++)
+    {
+
+        if(vetorMembros[i].estadoMembro =='E'){       // conta o numero de cada tipo de membro existente nas variaveis num numEstudantes,numTecnicos,numDocentes para depois dar printf
+
+            numEstudantes++;
+        }
+
+        if(vetorMembros[i].estadoMembro =='T'){
+
+            numTecnicos++;
+        }
+
+        if(vetorMembros[i].estadoMembro =='D'){
+
+            numDocentes++;
+        }
+    }
+
+
+        for(i=0;i<totTestes;i++)
+    {
+        mediaTestesTempo =(float) mediaTestesTempo + vetorTestes[i].tempDuracao;
+        if(vetorTestes[i].resultado == 'I')
+        {
+            testesInconclusivos++;
+
+        }
+    }
+        testesInconclusivos = (testesInconclusivos/totTestesRealizados)*100;
+        mediaTestesTempo = (mediaTestesTempo/totTestesRealizados);
+
+            
+                printf("Numero de Estudantes : %d\n",numEstudantes);
+                printf("Numero de Docentes : %d\n",numDocentes);
+                printf("Numero de Tecnicos : %d\n",numTecnicos);
+                if( totTestes == 0){
+
+                    printf("Sem testes realizados");
+                }
+                else{
+
+                printf("Tempo Medio de duracao de cada Teste : %.2fmin\n",mediaTestesTempo);
+                printf("Percentagem testes inconclusivos : %.2f%%\n",testesInconclusivos);
+                }
+        if (totMembros == 0) {
+            // Sem membros registados
+        }
+        else 
+        {       
+
+                menor = vetorMembros[0].totRealizadosIndiv;
+
+                for (i=1; i<totMembros; i++) 
+                {
+
+                    if (vetorMembros[i].totRealizadosIndiv<menor)
+                    {
+
+                    menor = vetorMembros[i].totRealizadosIndiv;
+                    }
+                }
+                printf("\nMembro(s) com menos testes:\n");
+                for (i=0;i<totMembros;i++)
+                {
+                    if (vetorMembros[i].totRealizadosIndiv == menor)
+                    {
+                        
+                        printf("\nNome: %s Testes Realizados: %d ",vetorMembros[i].nome,vetorMembros[i].totRealizadosIndiv);
+
+
+                    }
+
+                }
+            
+        }
+    
+
+        if (totTestes == 0) 
+        {
+
+        }
+        
+        else 
+        
+        {   
+            
+            for(a=0;a<totTestes;a++){
+
+                if(vetorTestes[a].tempDuracao>=0){                                      //Identifica o primeiro Teste realizado no Vetor Testes 
+
+                    menorTeste = vetorTestes[a].dataRealizacao;
+
+                    a = totTestes;
+                }
+
+                
+            }
+
+
+            for (i=1; i<totTestes; i++) 
+            {
+
+                if (vetorTestes[i].dataRealizacao.ano>menorTeste.ano && vetorTestes[i].tempDuracao>=0)
+                {
+
+                    menorTeste = vetorTestes[i].dataRealizacao;
+
+                }
+                else                                                                                                        //Compara a data dos testes realizados uns com os outros
+                {
+                    
+                    if(vetorTestes[i].dataRealizacao.mes>menorTeste.mes){
+
+                        menorTeste = vetorTestes[i].dataRealizacao;
+
+
+                    }
+
+                        else
+                        {
+
+                            if(vetorTestes[i].dataRealizacao.dia>menorTeste.dia)
+                            {
+                                menorTeste = vetorTestes[i].dataRealizacao;
+
+                            }
+
+                        }
+
+                    
+
+                }
+
+            }
+                printf("\n\nTeste(s) Mais Recente(s):\n");
+            for (i=0;i<totTestes;i++)
+            {
+                    
+                if (vetorTestes[i].dataRealizacao.ano == menorTeste.ano && vetorTestes[i].tempDuracao>=0)                                       //Imprime os testes realizados mais recentes
+                {
+                    if(vetorTestes[i].dataRealizacao.mes == menorTeste.mes){
+
+                        if(vetorTestes[i].dataRealizacao.dia == menorTeste.dia){
+
+                            printf("\nTipo de Teste: ");
+                            if (vetorTestes[i].tipoTeste == 1)
+                                {
+                                    printf("\t\t PCR");
+                                }
+                            else if (vetorTestes[i].tipoTeste == 2)
+                                {
+                                    printf("\t\t Antigenio");
+                                }
+                            printf("\t Data:%d/%d/%d",vetorTestes[i].dataRealizacao.ano,vetorTestes[i].dataRealizacao.mes,vetorTestes[i].dataRealizacao.dia);
+
+                        }
+
+
+                    }
+                    
+
+
+                }
+
+            }
+
+
+
+
+
+        
+        }
+              
+}

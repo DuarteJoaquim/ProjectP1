@@ -1,0 +1,20 @@
+
+Numero Utente 	 Nome 	 Tipo de Membro 	 Tipo Teste Realizado 	 Data de Realizacao 	 Resultado 	 Hora da Colheita 	 Duracao
+ 1 		 M	 Estudante		 PCR			 05/05/2025		 [Sem Registo]	 [Sem Registo] 		 [Sem Registo]
+
+
+Numero Utente 	 Nome 	 Tipo de Membro 	 Tipo Teste Realizado 	 Data de Realizacao 	 Resultado 	 Hora da Colheita 	 Duracao
+ 10359776 		 M	 Estudante			 32760/85/   0		 [Sem Registo]	 [Sem Registo] 		 [Sem Registo]
+
+
+Numero Utente 	 Nome 	 Tipo de Membro 	 Tipo Teste Realizado 	 Data de Realizacao 	 Resultado 	 Hora da Colheita 	 Duracao
+ 10359776 		 M	 Estudante			 32760/85/   0		 [Sem Registo]	 [Sem Registo] 		 [Sem Registo]
+
+
+Numero Utente 	 Nome 	 Tipo de Membro 	 Tipo Teste Realizado 	 Data de Realizacao 	 Resultado 	 Hora da Colheita 	 Duracao
+ 1 		 N	 Estudante		 PCR			 05/05/2020		 Positivo	 02:02 		 02 minutos
+
+
+Numero Utente 	 Nome 	 Tipo de Membro 	 Tipo Teste Realizado 	 Data de Realizacao 	 Resultado 	 Hora da Colheita 	 Duracao
+ 1 		 N	 Estudante		 PCR			 05/05/2030		 [Sem Registo]	 [Sem Registo] 		 [Sem Registo]
+
