@@ -402,13 +402,15 @@ void listarConfinamento(tipoMembro vetorMembros[],int totMembros){
     int i, confinados;
 
     confinados = 0 ;
-
+if (totMembros == 0)
+    {
+        printf("\n Não existem membros inscritos!");
+    }else{
+         printf("\nMembro \t Utente \t Confinamento \t Data de confinamento \t Duracao da quarentena");
     for(i=0;i<totMembros;i++){
-
         if(vetorMembros[i].estadoConfinamento == 1 || vetorMembros[i].estadoConfinamento == 2){
 
-            printf("\nMembro:%s\t Utente:%d",vetorMembros[i].nome,vetorMembros[i].numUtente);
-            printf("\tConfinamento:");
+            printf("\n %s\t %d",vetorMembros[i].nome,vetorMembros[i].numUtente);
             if (vetorMembros[i].estadoConfinamento == 1)
             {  
                printf("\t Quarentena");
@@ -418,9 +420,9 @@ void listarConfinamento(tipoMembro vetorMembros[],int totMembros){
                printf("\t Isolamento Profilatico");
 
             }
-            printf("\t\tData de confinamento:%d/%d/%d",vetorMembros[i].dataConfinamento.dia,vetorMembros[i].dataConfinamento.mes,vetorMembros[i].dataConfinamento.ano);
+            printf("\t\t %d/%d/%d",vetorMembros[i].dataConfinamento.dia,vetorMembros[i].dataConfinamento.mes,vetorMembros[i].dataConfinamento.ano);
 
-            printf("\tDuracao da quarentena : %d dias",vetorMembros[i].diasConfinamento);
+            printf("\t\t %d dias",vetorMembros[i].diasConfinamento);
 
             confinados++;
 
@@ -434,7 +436,7 @@ void listarConfinamento(tipoMembro vetorMembros[],int totMembros){
             printf("Sem Registo de Confinamentos");
 
             }   
-
+    }
 }
 
 //!!!!!!!!!!!!         TESTES       !!!!!!!!!!!!!!!!
@@ -620,7 +622,7 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
                                                 printf(" \n %d totTestes", *totTestes);
                                                 printf("\nTeste Realizado com sucesso");
                                 }
-                        }else if(*totTestes =! 0){
+                        }else if(*totTestes != 0){
                         //printf("Data da Realizacao do Teste: ");
                         //tipoData dataRealizacao = lerData(); 
                          //printf("NAO CHEGOU AO FOR");
@@ -648,6 +650,16 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
 
                                                 (*totTestesAgendados)--;
                                                 (*totTestesRealizados)++;
+
+                                                dadosTeste.tipoTeste = vetorTestes[pos].tipoTeste; // para os dados irem para o ultimo espaco do vetor
+                                                dadosTeste.numUtente = vetorTestes[pos].numUtente; 
+                                                dadosTeste.dataRealizacao.dia = vetorTestes[pos].dataRealizacao.dia;
+                                                dadosTeste.dataRealizacao.mes = vetorTestes[pos].dataRealizacao.mes; 
+                                                dadosTeste.dataRealizacao.ano = vetorTestes[pos].dataRealizacao.ano; 
+                                                dadosTeste.resultado = vetorTestes[pos].resultado; 
+                                                dadosTeste.horaColheita = vetorTestes[pos].horaColheita; 
+                                                dadosTeste.tempDuracao = vetorTestes[pos].tempDuracao;
+
                                                 // if Condicao, break the loop
                                                /* if (vetorTestes[pos].numUtente == numUtente) {
                                                     (*totTestes)--;
@@ -732,10 +744,21 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
                                        // printf(" \n %d numUtente do ultimo membro inserido",vetorTestes[*totTestes].numUtente); // #TESTE# // #TESTE# // #TESTE# // #TESTE# // #TESTE#
                                        // printf(" \n %d numUtente do ultimo membro inserido",vetorTestes[*totTestes].numUtente);  // #TESTE# // #TESTE# // #TESTE# // #TESTE# // #TESTE#
 
+
+
                                         (*totTestes)++;
                                         LogTestesInfo(vetorMembros[posicao], dadosTeste);
                                         printf(" \n %d totTestes", *totTestes);
                                         printf("\nTeste Realizado com sucesso");
+
+
+                                     /*  int k, posT;
+                                    for(posT=0;posT < *totTestes; posT++){
+                                        if(vetorTestes[posT].horaColheita.hora > 23 || vetorTestes[posT].horaColheita.min >59){           //vetorTestes[posT].tipoTeste != 0 && vetorTestes[posT].tipoTeste != 1 && vetorTestes[posT].tipoTeste != 0 && 
+                                               // total = posT; // parar loop(for)
+                                             vetorTestes = realloc(vetorTestes,(*totTestes-1)*sizeof(tipoTeste));
+                                        }
+                                    }*/
 
                                
                                 }
@@ -760,7 +783,7 @@ void mostrarDadosTestes(tipoTeste *vetorTestes,int *totTestes, tipoMembro vetorM
         printf("\nNumero Utente \t Nome \t Tipo de Membro \t Tipo Teste Realizado \t Data de Realizacao \t Resultado \t Hora da Colheita \t Duracao");
         for (i=0; i< *totTestes; i++)
         {
-                if(vetorTestes[i].resultado == '\0'){ //        verificar se 'e teste agendado analisando se o resultado se encontra vazio
+                if(vetorTestes[i].tipoTeste == 1 || vetorTestes[i].tipoTeste == 2){ //        verificar se 'e teste agendado analisando se o resultado se encontra vazio
                         //printf("**Teste Agendado**");
                         //printf("\nNumero Utente \t Nome \t Tipo de Membro \t Tipo Teste Agendado \t Data de Agendamento ");
 
@@ -815,7 +838,7 @@ void mostrarDadosTestes(tipoTeste *vetorTestes,int *totTestes, tipoMembro vetorM
                                             printf("\t [Sem Registo]\n");
                 }
                 
-                else if(vetorTestes[i].resultado != '\0'){ //verificar se e realizado
+                else if(vetorTestes[i].resultado == 'p' || vetorTestes[i].resultado == 'n' || vetorTestes[i].resultado == 'i'){ //verificar se e realizado
 
                             //printf("**Teste Realizado**");
                             //printf("\nNumero Utente \t Nome \t Tipo de Membro \t Tipo Teste Realizado \t Data de Realizacao \t Resultado \t Hora da Colheita \t Duracao");
@@ -1132,7 +1155,6 @@ return horatype;
 
 
 
-
 /* FICHEIROS */         
 
 void gravaFicheiroBinario_Todos(tipoMembro vetorMembros[], int totMembros, tipoTeste vetorTestes[], int totTestes,int totTestesAgendados,int totTestesRealizados,int totMembrosVacinados)
@@ -1244,10 +1266,10 @@ void LogTestesInfo(tipoMembro dadosMembro, tipoTeste dadosTeste)
                                             }else{
                                                 fprintf(ficheiro, "\t\t [Sem Registo]");
                                             }
-                                        if(dadosTeste.tempDuracao == -1){
+                                        if(dadosTeste.tempDuracao >= 0 && dadosTeste.tempDuracao <= 59){
                                             fprintf(ficheiro, "\t %02d:%02d \t",  dadosTeste.horaColheita.hora, dadosTeste.horaColheita.min );
                                             fprintf(ficheiro, "\t %02d minutos\n",  dadosTeste.tempDuracao);
-                                        }else
+                                        }else{
                                             fprintf(ficheiro, "\t [Sem Registo] \t");
                                             fprintf(ficheiro, "\t [Sem Registo]\n");
                                         }
@@ -1276,6 +1298,8 @@ void LogTestesInfo(tipoMembro dadosMembro, tipoTeste dadosTeste)
                                             }else{
                                                 fprintf(ficheiro,"\n");
                                             }
+
+                            }
 
                      fclose(ficheiro);
             }
