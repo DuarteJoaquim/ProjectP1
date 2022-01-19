@@ -574,7 +574,8 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
                                 {
                                     printf ("Erro - Impossivel aumentar o vetor");
                                     vetorTestes = paux; 	/* restaura valor de vFunc  */
-                                }else{
+                                }
+                                else{
                                         printf("Insira o tipo de Teste\n");
                                         printf("(1)PCR ou (2)Antigeneo: ");
                                         dadosTeste.tipoTeste = lerInteiro(1,2);
@@ -592,10 +593,10 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
                                             }while(opResultado != 'P' && opResultado != 'N' && opResultado != 'I');
                                                 dadosTeste.resultado = opResultado;
 
-                                            printf("Hora da Colheita: ");
+                                            printf("\nHora da Colheita: ");
                                             dadosTeste.horaColheita = lerHora();
 
-                                            printf("Tempo de Duracao(0min a 59min): ");
+                                            printf("\nTempo de Duracao(0min a 59min): ");
                                             dadosTeste.tempDuracao = lerInteiro(0,59);
 
                                             (*totTestesRealizados)++;
@@ -619,11 +620,12 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
                                                 printf(" \n %d totTestes", *totTestes);
                                                 printf("\nTeste Realizado com sucesso");
                                 }
-                        }else{
+                        }else if(*totTestes =! 0){
                         //printf("Data da Realizacao do Teste: ");
                         //tipoData dataRealizacao = lerData(); 
                          //printf("NAO CHEGOU AO FOR");
                          // printf(" \n %d totTestes", *totTestes);
+                            
                                 for(pos=0;pos < total; pos++){ 
                                             printf("\n %d Dia da posicao Encontrada", vetorTestes[pos].dataRealizacao.dia);
                                             printf(" \n %d Dia registado \n", dataRealizacao.dia);
@@ -638,10 +640,10 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
                                                 }while(opResultado != 'P' && opResultado != 'N' && opResultado != 'I');
                                                     vetorTestes[pos].resultado = opResultado;
 
-                                                printf("Hora da Colheita: ");
+                                                printf("\nHora da Colheita: ");
                                                 vetorTestes[pos].horaColheita = lerHora();
 
-                                                printf("Tempo de Duracao(0min a 59min): ");
+                                                printf("\nTempo de Duracao(0min a 59min): ");
                                                 vetorTestes[pos].tempDuracao = lerInteiro(0,59);
 
                                                 (*totTestesAgendados)--;
@@ -652,7 +654,7 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
                                                     break;
                                                 }*/
                                         }
-                                    else{                     //caso nao exista adiciona +1 espaco no vetor
+                                    else if(dadosTeste.tipoTeste == -1 && vetorTestes[pos].numUtente == numUtente){                     //caso nao exista adiciona +1 espaco no vetor
                                     // printf(" CHEGOU AO ELSE");
                                         total = pos; // parar loop(for)
                                         vetorTestes = realloc(vetorTestes,(*totTestes+1)*sizeof(tipoTeste));
@@ -666,7 +668,7 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
                                             printf("Insira o tipo de Teste\n");
                                             printf("(1)PCR ou (2)Antigeneo: ");
                                             dadosTeste.tipoTeste = lerInteiro(1,2);
-                                            //dadosTeste.numUtente = numUtente;
+                                            dadosTeste.numUtente = numUtente;
                                             dadosTeste.dataRealizacao.dia = dataRealizacao.dia;
                                             dadosTeste.dataRealizacao.mes = dataRealizacao.mes;
                                             dadosTeste.dataRealizacao.ano = dataRealizacao.ano;
@@ -678,10 +680,10 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
                                             limpaBufferStdin();        
                                             }while(opResultado != 'P' && opResultado != 'N' && opResultado != 'I');
                                                 dadosTeste.resultado = opResultado;
-                                            printf("Hora da Colheita: ");
+                                            printf("\nHora da Colheita: ");
                                             dadosTeste.horaColheita = lerHora();
 
-                                            printf("Tempo de Duracao(0min a 59min): ");
+                                            printf("\nTempo de Duracao(0min a 59min): ");
                                             dadosTeste.tempDuracao = lerInteiro(0,59);
 
                                             (*totTestesRealizados)++;
@@ -697,7 +699,6 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
                                                     }else if(totalPCR >= 15){
 
                                                         printf ("Nao e possivel fazer mais testes neste dia");
-                                                    // dadosTeste.dataRealizacao = -1;
                                                         dadosTeste.numUtente = -1;
                                                         dadosTeste.tipoTeste = -1;
                                                         dadosTeste.dataRealizacao.dia = -1;
@@ -711,7 +712,7 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
                                                     }
 
                                                     vetorTestes[*totTestes].tipoTeste = dadosTeste.tipoTeste; // para os dados irem para o ultimo espaco do vetor
-                                                    vetorTestes[*totTestes].numUtente = numUtente; 
+                                                    vetorTestes[*totTestes].numUtente = dadosTeste.numUtente; 
                                                     vetorTestes[*totTestes].dataRealizacao.dia = dadosTeste.dataRealizacao.dia;
                                                     vetorTestes[*totTestes].dataRealizacao.mes = dadosTeste.dataRealizacao.mes; 
                                                     vetorTestes[*totTestes].dataRealizacao.ano = dadosTeste.dataRealizacao.ano; 
@@ -1259,19 +1260,19 @@ void LogTestesInfo(tipoMembro dadosMembro, tipoTeste dadosTeste)
 
                                         if (dadosMembro.estadoVacinacao == 0)
                                             {
-                                            fprintf(ficheiro,"\t\n %d  Estado confinamento: Sem Vacina\n");
+                                            fprintf(ficheiro,"\t\n  Estado confinamento: Sem Vacina\n");
                                             }
                                             else if (dadosMembro.estadoVacinacao == 1)
                                             {
-                                            fprintf(ficheiro,"\t\n %d  Estado confinamento: Dose 1\n");
+                                            fprintf(ficheiro,"\t\n  Estado confinamento: Dose 1\n");
                                             }
                                             else if (dadosMembro.estadoVacinacao == 2)
                                             {
-                                            fprintf(ficheiro,"\t\n %d  Estado confinamento: Dose 2\n");
+                                            fprintf(ficheiro,"\t\n  Estado confinamento: Dose 2\n");
                                             }
                                             else if (dadosMembro.estadoVacinacao == 3)
                                             {
-                                            fprintf(ficheiro,"\t\n %d  Estado confinamento: Dose 3\n");
+                                            fprintf(ficheiro,"\t\n  Estado confinamento: Dose 3\n");
                                             }else{
                                                 fprintf(ficheiro,"\n");
                                             }
