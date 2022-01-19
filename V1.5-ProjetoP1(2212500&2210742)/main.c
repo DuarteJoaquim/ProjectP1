@@ -31,6 +31,7 @@ typedef struct
     tipoData dataConfinamento;
     int estadoVacinacao;// ((0)sem vacina,(1) dose1,(2) dose2 ou (3)dose3)
     tipoData ultimaVacina;
+    int totRealizadosIndiv;
 
 } tipoMembro;
 
@@ -53,7 +54,7 @@ int procuraMembro(tipoMembro vetorMembros[],int totMembros, int numUtente);
 void atualizarConfinamento(tipoMembro vetorMembros[],int totMembros);
 void atualizarVacinado(tipoMembro vetorMembros[],int totMembros);
 int contarMembrosVacinados(tipoMembro vetorMembros[],int totMembros);
-void mostrarDadosMembros(tipoMembro vetorMembros[], int totMembros);
+void mostrarDadosMembros(tipoMembro vetorMembros[], int totMembros, tipoTeste *vetorTestes, int totTestes);
 
 int contaTestesPCR(tipoTeste vetorTestes[],int totTestes, int totMembros, int dataDia, int dataMes, int dataAno);
 tipoTeste *agendarTeste(tipoTeste *vetorTestes, tipoMembro vetorMembros[],int *totTestes, int *totTestesAgendados, int totMembros);
@@ -105,7 +106,7 @@ int main()
             break;
 
         case '1':
-                mostrarDadosMembros(vetorMembros, totMembros);
+                mostrarDadosMembros(vetorMembros, totMembros, vetorTestes, totTestes);
             break;
         case '2':
                 mostrarDadosTestes(vetorTestes, &totTestes, vetorMembros, totMembros);
@@ -188,6 +189,7 @@ tipoMembro lerDadosMembro (void){
     dadosMembro.estadoVacinacao = -1; /* Identificar que estadoVacinacao se encontra por obter  */
     dadosMembro.estadoConfinamento = -1; /* Identificar que estadoConfinamento se encontra por obter */
     dadosMembro.diasConfinamento = 0;
+    dadosMembro.totRealizadosIndiv = 0;
     return dadosMembro;
 }
 
@@ -298,9 +300,9 @@ int contarMembrosVacinados(tipoMembro vetorMembros[], int totMembros){
     return vacinados;
 }
 
-void mostrarDadosMembros(tipoMembro vetorMembros[], int totMembros)
+void mostrarDadosMembros(tipoMembro vetorMembros[], int totMembros, tipoTeste *vetorTestes, int totTestes)
 {
-    int i;
+    int i, k;
 
     if (totMembros == 0)
     {
@@ -308,7 +310,7 @@ void mostrarDadosMembros(tipoMembro vetorMembros[], int totMembros)
     }
     else
     {
-        printf("\nNumero Utente \t Nome \t\t Tipo de Membro \t Estado Vacinacao \t Estado Confinamento ");
+        printf("\nNumero Utente \t Nome \t\t Tipo de Membro \t Estado Vacinacao \t Estado Confinamento \t Testes Realizados");
         for (i=0; i< totMembros; i++)
         {
             printf("\n %d \t\t %s ",vetorMembros[i].numUtente, vetorMembros[i].nome);
@@ -357,8 +359,31 @@ void mostrarDadosMembros(tipoMembro vetorMembros[], int totMembros)
             {
                printf("\t\t Isolamento Profilatico");
             }else{
-                printf("\t\t [Sem Registo]");
+                printf("\t\t [Sem Registo]\t");
             }
+
+             printf("\t %d \t",vetorMembros[i].totRealizadosIndiv);
+
+                //DADOS TESTES AGENDADOS DO MESMO MEMBRO
+                    for (k=0; k < totTestes; k++)
+                {
+                    if(vetorTestes[k].resultado == '\0' && vetorTestes[k].numUtente == vetorMembros[i].numUtente){ 
+                    //        verificar se 'e teste agendado analisando se o resultado se encontra vazio && se o numUtente[vetorMembros] 'e igual ao numUtente[vetorTestes]
+                    //                                          (para mostrar apenas os dados agendados e do membro a ser listado)
+                        printf("\nDados dos testes agendados\n");
+                        printf("\nTipo Teste Agendado \t Data de Agendamento \t \n");
+                        if (vetorTestes[k].tipoTeste == 1)
+                                                {
+                                                    printf("PCR");
+                                                }
+                                            else if (vetorTestes[k].tipoTeste == 2)
+                                                {
+                                                    printf("\t\t Antigenio");
+                                                }
+
+                                            printf("\t\t\t %02d/%02d/%4d\n", vetorTestes[k].dataRealizacao.dia, vetorTestes[k].dataRealizacao.mes, vetorTestes[k].dataRealizacao.ano);
+                    }
+                }   
         }
     }
 }
@@ -464,6 +489,8 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
 
     tipoTeste dadosTeste;
     tipoTeste *paux; /* ponteiro para restaurar valor de vFunc  */
+    tipoMembro dadosMembro;
+
     int total = *totTestes;
     int dataDia, dataMes, dataAno;
     int posicao, totalPCR, numUtente, pos;
@@ -529,6 +556,8 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
                                                 vetorTestes[*totTestes].resultado = dadosTeste.resultado; 
                                                 vetorTestes[*totTestes].horaColheita = dadosTeste.horaColheita; 
                                                 vetorTestes[*totTestes].tempDuracao = dadosTeste.tempDuracao; 
+
+                                                vetorMembros[posicao].totRealizadosIndiv++;
 
                                                 // printf(" \n %d numUtente do ultimo membro inserido",vetorTestes[*totTestes].numUtente); // #TESTE# // #TESTE# // #TESTE# // #TESTE# // #TESTE#
                                                 // printf(" \n %d numUtente do ultimo membro inserido",vetorTestes[*totTestes].numUtente);  // #TESTE# // #TESTE# // #TESTE# // #TESTE# // #TESTE#
@@ -642,6 +671,8 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
                                         vetorTestes[*totTestes].resultado = dadosTeste.resultado; 
                                         vetorTestes[*totTestes].horaColheita = dadosTeste.horaColheita; 
                                         vetorTestes[*totTestes].tempDuracao = dadosTeste.tempDuracao; 
+
+                                        vetorMembros[posicao].totRealizadosIndiv++;
 
                                        // printf(" \n %d numUtente do ultimo membro inserido",vetorTestes[*totTestes].numUtente); // #TESTE# // #TESTE# // #TESTE# // #TESTE# // #TESTE#
                                        // printf(" \n %d numUtente do ultimo membro inserido",vetorTestes[*totTestes].numUtente);  // #TESTE# // #TESTE# // #TESTE# // #TESTE# // #TESTE#
