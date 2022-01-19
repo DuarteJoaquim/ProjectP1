@@ -107,6 +107,9 @@ int main()
         case 'C':
                 atualizarConfinamento(vetorMembros, totMembros);
             break;
+        case 'A':
+                vetorTestes = agendarTeste(vetorTestes, vetorMembros, &totTestes, &totTestesAgendados , totMembros);
+            break;
 
         case '1':
                 mostrarDadosMembros(vetorMembros, totMembros, vetorTestes, totTestes);
@@ -114,15 +117,11 @@ int main()
         case '2':
                 mostrarDadosTestes(vetorTestes, &totTestes, vetorMembros, totMembros);
             break;
-                break;
         case '3':
                 mostrarTestesUtilizador(vetorTestes, &totTestes, vetorMembros, totMembros);
             break;
         case '4':
                 listarConfinamento(vetorMembros,totMembros);
-            break;
-        case 'A':
-                vetorTestes = agendarTeste(vetorTestes, vetorMembros, &totTestes, &totTestesAgendados , totMembros);
             break;
         case 'R':
                 vetorTestes = inserirTesteRealizado(vetorTestes, &totTestes, &totTestesRealizados, &totTestesAgendados, vetorMembros, totMembros);
@@ -131,7 +130,7 @@ int main()
                 gravaFicheiroBinario_Todos(vetorMembros,totMembros,vetorTestes,totTestes,totTestesAgendados,totTestesRealizados,totMembrosVacinados);
            // gravaFicheiroTexto(vetorEstudantes, totEstudantes);
             break;
-        case 'U':
+        case 'L':
                 vetorTestes = leFicheiroBinario_Todos(vetorMembros,&totMembros,vetorTestes,&totTestes,&totTestesAgendados,&totTestesRealizados,&totMembrosVacinados);
            // totEstudantes=leFicheiroBinario(vetorEstudantes);leFicheiroBinario(tipoMembro vetorMembros[MAX_MEMBROS],tipoTeste*vetorTestes,*totTestes)
             break;
@@ -162,6 +161,8 @@ char menu (int totalM, int totTestesAg, int totTestesRea, int totalMemVac)
     printf("\n 2 - Mostrar Dados de Todos os Testes");
     printf("\n 3 - Mostrar Dados dos Testes de um Membro");
     printf("\n 4 - Mostrar Dados Confinamentos");
+    printf("\n G - Gravar Ficheiro");
+    printf("\n L - Ler Ficheiro");
 
     printf("\n\n T - Terminar Programa");
     printf("\n\n \t\t Opcao (I,V,C,M,A ou T(erminar) ) --> ");
@@ -400,6 +401,45 @@ void mostrarDadosMembros(tipoMembro vetorMembros[], int totMembros, tipoTeste *v
     }
 }
 
+void listarConfinamento(tipoMembro vetorMembros[],int totMembros){
+    int i, confinados;
+
+    confinados = 0 ;
+
+    for(i=0;i<totMembros;i++){
+
+        if(vetorMembros[i].estadoConfinamento == 1 || vetorMembros[i].estadoConfinamento == 2){
+
+            printf("\nMembro:%s\t Utente:%d",vetorMembros[i].nome,vetorMembros[i].numUtente);
+            printf("\tConfinamento:");
+            if (vetorMembros[i].estadoConfinamento == 1)
+            {  
+               printf("\t Quarentena");
+            }  
+            if (vetorMembros[i].estadoConfinamento == 2)
+            {
+               printf("\t Isolamento Profilatico");
+
+            }
+            printf("\t\tData de confinamento:%d/%d/%d",vetorMembros[i].dataConfinamento.dia,vetorMembros[i].dataConfinamento.mes,vetorMembros[i].dataConfinamento.ano);
+
+            printf("\tDuracao da quarentena : %d dias",vetorMembros[i].diasConfinamento);
+
+            confinados++;
+
+        }
+
+
+    }
+
+            if (confinados == 0){
+
+            printf("Sem Registo de Confinamentos");
+
+            }   
+
+}
+
 //!!!!!!!!!!!!         TESTES       !!!!!!!!!!!!!!!!
 
 int contaTestesPCR(tipoTeste vetorTestes[],int totTestes, int totMembros, int dataDia, int dataMes, int dataAno){
@@ -625,7 +665,7 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
                                             printf("Insira o tipo de Teste\n");
                                             printf("(1)PCR ou (2)Antigeneo: ");
                                             dadosTeste.tipoTeste = lerInteiro(1,2);
-                                            dadosTeste.numUtente = numUtente;
+                                            //dadosTeste.numUtente = numUtente;
                                             dadosTeste.dataRealizacao.dia = dataRealizacao.dia;
                                             dadosTeste.dataRealizacao.mes = dataRealizacao.mes;
                                             dadosTeste.dataRealizacao.ano = dataRealizacao.ano;
@@ -668,6 +708,15 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
                                                         dadosTeste.horaColheita.min = -1; 
                                                         dadosTeste.tempDuracao = -1;
                                                     }
+
+                                                    vetorTestes[*totTestes].tipoTeste = dadosTeste.tipoTeste; // para os dados irem para o ultimo espaco do vetor
+                                                    vetorTestes[*totTestes].numUtente = numUtente; 
+                                                    vetorTestes[*totTestes].dataRealizacao.dia = dadosTeste.dataRealizacao.dia;
+                                                    vetorTestes[*totTestes].dataRealizacao.mes = dadosTeste.dataRealizacao.mes; 
+                                                    vetorTestes[*totTestes].dataRealizacao.ano = dadosTeste.dataRealizacao.ano; 
+                                                    vetorTestes[*totTestes].resultado = dadosTeste.resultado; 
+                                                    vetorTestes[*totTestes].horaColheita = dadosTeste.horaColheita; 
+                                                    vetorTestes[*totTestes].tempDuracao = dadosTeste.tempDuracao; 
                                                     
                                                 }
                                         }    
@@ -675,14 +724,6 @@ tipoTeste *inserirTesteRealizado(tipoTeste *vetorTestes, int *totTestes, int *to
                                                     break;
                                                     }   */
                                     }
-                                        vetorTestes[*totTestes].tipoTeste = dadosTeste.tipoTeste; // para os dados irem para o ultimo espaco do vetor
-                                        vetorTestes[*totTestes].numUtente = dadosTeste.numUtente; 
-                                        vetorTestes[*totTestes].dataRealizacao.dia = dadosTeste.dataRealizacao.dia;
-                                        vetorTestes[*totTestes].dataRealizacao.mes = dadosTeste.dataRealizacao.mes; 
-                                        vetorTestes[*totTestes].dataRealizacao.ano = dadosTeste.dataRealizacao.ano; 
-                                        vetorTestes[*totTestes].resultado = dadosTeste.resultado; 
-                                        vetorTestes[*totTestes].horaColheita = dadosTeste.horaColheita; 
-                                        vetorTestes[*totTestes].tempDuracao = dadosTeste.tempDuracao; 
 
                                         vetorMembros[posicao].totRealizadosIndiv++;
 
@@ -993,30 +1034,6 @@ int contaPositivos(tipoTeste *vetorTestes, int totTestes, int utente){
 
 /*!!!!!!!!!!!!FUNCOES EM MANUTENCAO!!!!!!!!!!!!!!!!
 
-void mostrartestes(tipoTeste *testes.int quantidadeTestes){
-
-    int i;
-
-    for(i=0; i<quantidadeTestes; i++){
-        displayteste(*testes[i]);
-    }
-}
-
-
-void displayteste (tipoTeste*testes[]){
-
-
-    printf("Numero utente",*testes[i].numUtente);
-    printf("dataAgendada",*testes[i].dataAgendada);
-    printf("tipoTeste",*testes[i].tipoTeste);
-    printf("resultado",*testes[i].resultado);
-    printf("tempDuracao",*testes[i].tempDuracao);
-    printf("horaColheita",*testes[i].horaColheita);
-}
-
-///////////////////////////////////////////////
-
-
 void fEstatistica(tipoMembro vetorMembros[],int totMembros){
 
 int i,numEstudantes,numTecnicos,numDocentes;
@@ -1042,45 +1059,6 @@ for(i=0;i<totMembros;i++){
 }
 
 */
-
-void listarConfinamento(tipoMembro vetorMembros[],int totMembros){
-    int i, confinados;
-
-    confinados = 0 ;
-
-    for(i=0;i<totMembros;i++){
-
-        if(vetorMembros[i].estadoConfinamento == 1 || vetorMembros[i].estadoConfinamento == 2){
-
-            printf("\nMembro:%s\t Utente:%d",vetorMembros[i].nome,vetorMembros[i].numUtente);
-            printf("\tConfinamento:");
-            if (vetorMembros[i].estadoConfinamento == 1)
-            {  
-               printf("\t Quarentena");
-            }  
-            if (vetorMembros[i].estadoConfinamento == 2)
-            {
-               printf("\t Isolamento Profilatico");
-
-            }
-            printf("\t\tData de confinamento:%d/%d/%d",vetorMembros[i].dataConfinamento.dia,vetorMembros[i].dataConfinamento.mes,vetorMembros[i].dataConfinamento.ano);
-
-            printf("\tDuracao da quarentena : %d dias",vetorMembros[i].diasConfinamento);
-
-            confinados++;
-
-        }
-
-
-    }
-
-            if (confinados == 0){
-
-            printf("Sem Registo de Confinamentos");
-
-            }   
-
-}
 
 
 /* Funcoes para leitura de dados */
@@ -1177,9 +1155,11 @@ tipoHora lerHora(void){
     horatype.min = lerInteiro(0,59);   
 return horatype;
 }
-//FICHEIROS          
 
 
+
+
+/* FICHEIROS */         
 
 void gravaFicheiroBinario_Todos(tipoMembro vetorMembros[], int totMembros, tipoTeste vetorTestes[], int totTestes,int totTestesAgendados,int totTestesRealizados,int totMembrosVacinados)
 {
